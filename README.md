@@ -1,3 +1,22 @@
+dev note: adding in Dependencies
+
+```bash
+forge install openzeppelin/openzeppelin-contracts --no-commit
+
+```
+
+Add remappings to `foundry.toml`
+
+```bash
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+remappings = [
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts",
+]
+
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
