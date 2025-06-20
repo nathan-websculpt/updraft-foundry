@@ -15,7 +15,7 @@ libs = ["lib"]
 remappings = [
   "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts",
 ]
-
+```
 
 ## Foundry
 
