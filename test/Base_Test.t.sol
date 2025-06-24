@@ -23,8 +23,8 @@ abstract contract Base_Test is Test, Utils {
     uint256 constant ACCRUAL_RATE = 100_000; // 10%
     uint256 constant CYCLE_LENGTH = 12 * 60 * 60; // 12 hrs
 
-    uint256 constant ANTI_SPAM_FEE = 1e18; // 1 UDP
-    uint256 constant CONTRIBUTION = 10e18; // 10 UDP
+    uint256 constant ANTI_SPAM_FEE = 1e18; // 1 UPD
+    uint256 constant CONTRIBUTION = 10e18; // 10 UPD
     uint256 constant CONTRIBUTION_FEE = 10_000; // 1%
 
     uint256 constant SOLUTION_STAKE = 100e18;
