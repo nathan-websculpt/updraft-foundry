@@ -6,7 +6,7 @@ import "./Base_Test.t.sol";
 contract Solution_Test is Base_Test {
 
     function testAllowsUsersToContributeAndCreatePosition() public {    
-        Solution _thisSolution = _setup(); // makes an idea, a solution, and aprroves UPD spending on solution for owner, alice, and bob
+        Solution _thisSolution = _setup(); // makes an idea, a solution, and approves UPD spending on solution for owner, alice, and bob
 
         // alice contributes
         vm.prank(alice);

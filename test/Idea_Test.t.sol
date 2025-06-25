@@ -32,7 +32,7 @@ contract Idea_Test is Base_Test {
 
 
         (uint256 tokens, ) = _thisIdea.checkPosition(alice, 0);
-        uint256 fee = max(ANTI_SPAM_FEE, (CONTRIBUTION_AMT * percentFee) / percentScale);
+        uint256 fee = _max(ANTI_SPAM_FEE, (CONTRIBUTION_AMT * percentFee) / percentScale);
         uint256 expectedContributorFee = (CONTRIBUTION_AMT - ANTI_SPAM_FEE) * contributorFee / percentScale;
         uint256 expectedAmount = CONTRIBUTION_AMT - ANTI_SPAM_FEE - expectedContributorFee;
 
@@ -364,7 +364,7 @@ contract Idea_Test is Base_Test {
     }
 
     function _getExpectedAmt() private returns (uint256) {
-        uint256 fee = max(ANTI_SPAM_FEE, (CONTRIBUTION_AMT * 10_000) / 1_000_000);
+        uint256 fee = _max(ANTI_SPAM_FEE, (CONTRIBUTION_AMT * 10_000) / 1_000_000);
         uint256 expectedAmt = CONTRIBUTION_AMT - fee;
         return expectedAmt;
     }

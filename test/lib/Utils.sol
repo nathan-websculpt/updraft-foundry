@@ -16,4 +16,8 @@ contract Utils {
     function _makeSolutionData() internal pure returns(bytes memory) {
         return abi.encode(CommonData("Solution for Test One", "Description for Solution One"));
     }
+    
+    function _max(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a > b ? a : b;
+    }
 }

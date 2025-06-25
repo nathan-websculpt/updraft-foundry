@@ -9,40 +9,44 @@ import {Solution} from "../src/Solution.sol";
 import {UPDToken} from "../src/UPDToken.sol";
 import {Utils} from "./lib/Utils.sol";
 
-abstract contract Base_Test is Test, Utils {
+abstract contract Solution_Base_Test is Test, Utils {
+    
     Updraft _updraft;
     UPDToken _upd;
 
     address owner;
     address alice;
     address bob;
-    address faucet = 0x017F2A266a9833635aC4Ab6F242ed54087E54C50; // fund that collects and distributes a universal dividend: https://arbiscan.io/address/0x017F2A266a9833635aC4Ab6F242ed54087E54C50
-
-    uint256 constant MIN_FEE = 1e18;
-    uint256 constant PERCENT_FEE = 10_000; // 1%
-    uint256 constant ACCRUAL_RATE = 100_000; // 10%
-    uint256 constant CYCLE_LENGTH = 12 * 60 * 60; // 12 hrs
+    address james;
+    address kirk;
+    address faucet = 0xdC0046B52e2E38AEe2271B6171ebb65cCD337518; // fund that collects and distributes a universal dividend
 
     uint256 constant ANTI_SPAM_FEE = 1e18; // 1 UPD
+    uint256 constant PERCENT_FEE = 10_000; // 1%
+    uint256 constant ACCRUAL_RATE = 100_000; // 10%
+    uint256 constant CYCLE_LENGTH = 3600; // 1 hour in seconds
+
     uint256 constant CONTRIBUTION = 10e18; // 10 UPD
-    uint256 constant CONTRIBUTION_FEE = 10_000; // 1%
+    uint256 constant CONTRIBUTION_FEE = 100_000; // 1%
 
     uint256 constant SOLUTION_STAKE = 100e18;
     uint256 constant SOLUTION_GOAL = 10_000e18;
-    uint256 constant SOLUTION_DEADLINE = 3940876877;
+    uint256 constant SOLUTION_DEADLINE = 7 * 24 * 60 * 60; // 7 days
 
     uint256 constant TRANSFER_AMT = 100e18;
-    uint256 constant CONTRIBUTION_AMT = 20e18;
-    
+    uint256 constant CONTRIBUTION_AMT = 10e18;
+
     function setUp() public {
         owner = address(this);
         alice = address(1);
         bob = address(2);
+        james = address(3);
+        kirk = address(4);
         _upd = new UPDToken();
         
         _updraft = new Updraft(
             _upd,
-            MIN_FEE,
+            ANTI_SPAM_FEE,
             PERCENT_FEE,
             CYCLE_LENGTH,
             ACCRUAL_RATE,
@@ -50,7 +54,7 @@ abstract contract Base_Test is Test, Utils {
         );
 
         // approve updraft to spend UDP
-        _upd.approve(address(_updraft), 10000000e18); // TODO:
+        _upd.approve(address(_updraft), 10000000e18);
 
         // give alice and bob some UPD
         _upd.transfer(alice, TRANSFER_AMT);
