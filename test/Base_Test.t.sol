@@ -33,7 +33,7 @@ abstract contract Base_Test is Test, Utils {
 
     uint256 constant TRANSFER_AMT = 100e18;
     uint256 constant CONTRIBUTION_AMT = 20e18;
-
+    
     function setUp() public {
         owner = address(this);
         alice = address(1);
@@ -44,8 +44,8 @@ abstract contract Base_Test is Test, Utils {
             _upd,
             MIN_FEE,
             PERCENT_FEE,
-            ACCRUAL_RATE,
             CYCLE_LENGTH,
+            ACCRUAL_RATE,
             faucet
         );
 
@@ -79,6 +79,8 @@ abstract contract Base_Test is Test, Utils {
         return (logs, Solution(solutionAddr), solutionBytesData);
     }
     
+    //TODO: rename _max
+    //TODO: move to Utils
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
         return a > b ? a : b;
     }
