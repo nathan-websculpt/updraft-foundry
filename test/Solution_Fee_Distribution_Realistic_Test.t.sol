@@ -27,13 +27,13 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         uint256 secondContribution = 20_000e18; // 20,000 UPD
         vm.prank(alice);
         _thisSolution.contribute(secondContribution);
-        console2.log("Second wallet contributed %d UPD in cycle 1", secondContribution);
+        console2.log("Second wallet contributed %s UPD in cycle 1", _formatUnits(secondContribution));
 
         // Third wallet contributes in the first cycle
         uint256 thirdContribution = 10_000e18; // 10,000 UPD
         vm.prank(bob);
         _thisSolution.contribute(thirdContribution);
-        console2.log("Third wallet contributed %d UPD in cycle 1", thirdContribution);
+        console2.log("Third wallet contributed %s UPD in cycle 1", _formatUnits(thirdContribution));
 
         // Advance time to the second cycle
         skip(cycleLength + 1);
@@ -41,7 +41,7 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         // First wallet contributes in the second cycle
         uint256 firstContributionSecondCycle = 30_000e18;
         _thisSolution.contribute(firstContributionSecondCycle);
-        console2.log("First wallet contributed %d UPD in cycle 2", firstContributionSecondCycle);
+        console2.log("First wallet contributed %s UPD in cycle 2", _formatUnits(firstContributionSecondCycle));
 
         // Advance time to the third cycle
         skip(cycleLength + 1);
@@ -50,7 +50,7 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         uint256 secondContributionSecondCycle = 15_000e18;
         vm.prank(alice);
         _thisSolution.contribute(secondContributionSecondCycle);
-        console2.log("Second wallet contributed %d UPD in cycle 3", secondContributionSecondCycle);
+        console2.log("Second wallet contributed %s UPD in cycle 3", _formatUnits(secondContributionSecondCycle));
 
         // Advance time to the fourth cycle
         skip(cycleLength + 1);
@@ -59,7 +59,7 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         uint256 thirdContributionSecondCycle = 25_000e18;
         vm.prank(bob);
         _thisSolution.contribute(thirdContributionSecondCycle);
-        console2.log("Third wallet contributed %d UPD in cycle 4", thirdContributionSecondCycle);
+        console2.log("Third wallet contributed %s UPD in cycle 4", _formatUnits(thirdContributionSecondCycle));
 
         // Advance time to the fifth cycle
         skip(cycleLength + 1);
@@ -76,11 +76,11 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         (uint256 thirdFeesEarned1, uint256 thirdShares1) = _thisSolution.checkPosition(bob, 0);
         (uint256 thirdFeesEarned2, uint256 thirdShares2) = _thisSolution.checkPosition(bob, 1);
 
-        console2.log("First position fees earned: %d UPD, shares: %d", firstFeesEarned, firstShares);
-        console2.log("Second position 1 fees earned: %d UPD, shares: %d", secondFeesEarned1, secondShares1);
-        console2.log("Second position 2 fees earned: %d UPD, shares: %d", secondFeesEarned2, secondShares2);
-        console2.log("Third position 1 fees earned: %d UPD, shares: %d", thirdFeesEarned1, thirdShares1);
-        console2.log("Third position 2 fees earned: %d UPD, shares: %d", thirdFeesEarned2, thirdShares2);
+        console2.log("First position fees earned: %s UPD, shares: %s", _formatUnits(firstFeesEarned), _formatUnits(firstShares));
+        console2.log("Second position 1 fees earned: %s UPD, shares: %s", _formatUnits(secondFeesEarned1), _formatUnits(secondShares1));
+        console2.log("Second position 2 fees earned: %s UPD, shares: %s", _formatUnits(secondFeesEarned2), _formatUnits(secondShares2));
+        console2.log("Third position 1 fees earned: %s UPD, shares: %s", _formatUnits(thirdFeesEarned1), _formatUnits(thirdShares1));
+        console2.log("Third position 2 fees earned: %s UPD, shares: %s", _formatUnits(thirdFeesEarned2), _formatUnits(thirdShares2));
 
         // Get original position contributions
         (uint256 firstOriginalContribution, , , ,) = _thisSolution.positionsByAddress(owner, 0);
@@ -89,11 +89,11 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         (uint256 thirdOriginalContribution1, , , ,) = _thisSolution.positionsByAddress(bob, 0);
         (uint256 thirdOriginalContribution2, , , ,) = _thisSolution.positionsByAddress(bob, 1);
 
-        console2.log("First original position contribution: %d UPD", firstOriginalContribution);
-        console2.log("Second original position 1 contribution: %d UPD", secondOriginalContribution1);
-        console2.log("Second original position 2 contribution: %d UPD", secondOriginalContribution2);
-        console2.log("Third original position 1 contribution: %d UPD", thirdOriginalContribution1);
-        console2.log("Third original position 2 contribution: %d UPD", thirdOriginalContribution2);
+        console2.log("First original position contribution: %s UPD", _formatUnits(firstOriginalContribution));
+        console2.log("Second original position 1 contribution: %s UPD", _formatUnits(secondOriginalContribution1));
+        console2.log("Second original position 2 contribution: %s UPD", _formatUnits(secondOriginalContribution2));
+        console2.log("Third original position 1 contribution: %s UPD", _formatUnits(thirdOriginalContribution1));
+        console2.log("Third original position 2 contribution: %s UPD", _formatUnits(thirdOriginalContribution2));
 
         // All wallets collect fees from all positions
         _thisSolution.collectFees(0);
@@ -116,10 +116,10 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         uint256 secondIncrease = secondBalanceAfter - secondBalanceBefore;
         uint256 thirdIncrease = thirdBalanceAfter - thirdBalanceBefore;
 
-        console2.log("First wallet collected %d UPD in fees", firstIncrease);
-        console2.log("Second wallet collected %d UPD in fees", secondIncrease);
-        console2.log("Third wallet collected %d UPD in fees", thirdIncrease);
-        console2.log("Total fees collected: %d UPD", firstIncrease + secondIncrease + thirdIncrease);
+        console2.log("First wallet collected %s UPD in fees", _formatUnits(firstIncrease));
+        console2.log("Second wallet collected %s UPD in fees", _formatUnits(secondIncrease));
+        console2.log("Third wallet collected %s UPD in fees", _formatUnits(thirdIncrease));
+        console2.log("Total fees collected: %s UPD", _formatUnits(firstIncrease + secondIncrease + thirdIncrease));
 
         // Verify all wallets received fees
         assertGt(firstIncrease, 0);
@@ -131,26 +131,26 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
 
         // Calculate the total shares
         uint256 totalShares = firstShares + secondShares1 + secondShares2 + thirdShares1 + thirdShares2;
+        console2.log("Total shares: %s", _formatUnits(totalShares));    
 
         // Calculate the share distribution
-        uint256 firstSharePercentage = firstShares / totalShares;
-        uint256 secondSharePercentage = (secondShares1 + secondShares2) / totalShares;
-        uint256 thirdSharePercentage = (thirdShares1 + thirdShares2) / totalShares;
+        uint256 firstSharePercentage = (firstShares * 1e18) / totalShares;
+        uint256 secondSharePercentage = ((secondShares1 + secondShares2) * 1e18)/ totalShares;
+        uint256 thirdSharePercentage = ((thirdShares1 + thirdShares2) * 1e18) / totalShares;
 
-        console2.log("First wallet share percentage: %d percent", firstSharePercentage);
-        console2.log("Second wallet share percentage: %d percent", secondSharePercentage);
-        console2.log("Third wallet share percentage: %d percent", thirdSharePercentage);
+        console2.log("First wallet share percentage: %s percent", _formatUnits(firstSharePercentage * 100));
+        console2.log("Second wallet share percentage: %s percent", _formatUnits(secondSharePercentage * 100));
+        console2.log("Third wallet share percentage: %s percent", _formatUnits(thirdSharePercentage * 100));
 
         // Calculate the fee distribution
-        // TODO: these values are fractions, which solidity can't do - come back to this and scale the math right
         uint256 totalFees = (firstIncrease + secondIncrease + thirdIncrease);
         uint256 firstFeePercentage = (firstIncrease * 1e18) / totalFees;
         uint256 secondFeePercentage = (secondIncrease * 1e18) / totalFees;
         uint256 thirdFeePercentage = (thirdIncrease * 1e18) / totalFees;
 
-        console2.log("First wallet fee percentage: %d percent", firstFeePercentage);
-        console2.log("Second wallet fee percentage: %d percent", secondFeePercentage);
-        console2.log("Third wallet fee percentage: %d percent", thirdFeePercentage);
+        console2.log("First wallet fee percentage: %s percent", _formatUnits(firstFeePercentage * 100));
+        console2.log("Second wallet fee percentage: %s percent", _formatUnits(secondFeePercentage * 100));
+        console2.log("Third wallet fee percentage: %s percent", _formatUnits(thirdFeePercentage * 100));
 
         // Verify that all wallets receive fees
         assertGt(firstFeePercentage, 0, "First wallet did not receive fees");
