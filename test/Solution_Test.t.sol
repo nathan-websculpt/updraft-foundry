@@ -391,6 +391,7 @@ contract Solution_Test is Base_Test {
         assertGe(tokensContributed, fundingGoal);
 
         // Extend the goal (this sets goalChangedTime to current timestamp)
+        vm.warp(10);
         uint256 newGoal = initialGoal * 2;
         _thisSolution.extendGoal(newGoal);
 
@@ -405,25 +406,12 @@ contract Solution_Test is Base_Test {
         // verify that the goal has failed
         assertEq(_thisSolution.goalFailed(), true);
 
-        // to actually hit the revert: ContributedBeforeGoalExtended Error
-        // the following must be true
-        // _thisSolution.goalExtendedTime() > 0 && contributionTime < _thisSolution.goalExtendedTime()
-        // (, uint256 contributionTime, , , ) = _thisSolution.positionsByAddress(alice, 0);
-        // assertGt(_thisSolution.goalExtendedTime(), 0);
-        // assertLt(contributionTime, _thisSolution.goalExtendedTime()); // FAILS, so the expected error is not thrown
-        // ^^^ proof that the test (or the contract) is off
+        bytes4 selector = bytes4(keccak256("ContributedBeforeGoalExtended(uint256,uint256)"));
 
-
-        // ORIGINAL
-        // // Try to get refund for position created BEFORE goal extension
-        // // This should fail with ContributedBeforeGoalExtended error
+        // Try to get refund for position created BEFORE goal extension
         vm.prank(alice);
-        vm.expectRevert();
-        // vm.expectRevert(Solution.ContributedBeforeGoalExtended.selector);
-        _thisSolution.refund(0); // TODO: come back to this one, it is not failing for the reason that Adam stated it should in the comments
-
-
-
+        vm.expectRevert(abi.encodeWithSelector(selector, 1, 10));
+        _thisSolution.refund(0);
     }
 
     function testShouldAllowRefundsForPositionsCreatedAfterGoalExtension() public {
@@ -554,7 +542,7 @@ contract Solution_Test is Base_Test {
         (, Idea _thisIdea, ) = _createIdea();
         (, Solution _thisSolution, ) = _createSolution(address(_thisIdea));
 
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
+        _upd.approve(address(_thisSolution), 100000000000e18);
 
         vm.prank(alice);
         _upd.approve(address(_thisSolution), TRANSFER_AMT);

@@ -93,7 +93,7 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
                 }
 
                 // get the position index
-                uint256 positionIndex = _thisIdea.numPositions(_thisWallet) - 1; // TODO: first wallet has 0 positions in Cycle 1
+                uint256 positionIndex = _thisIdea.numPositions(_thisWallet) - 1;
 
                 positions.push(Position({wallet: walletNames[walletIndex], walletIndex: walletIndex, positionIndex: positionIndex, cycle: cycle, contribution: contribution, contributionAfterFee: contributionAfterFee, contributorFeePaid: contributorFeePaid, actualWithdrawn: 0}));
             }
