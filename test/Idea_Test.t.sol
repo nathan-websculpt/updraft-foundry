@@ -221,7 +221,7 @@ contract Idea_Test is Base_Test {
 
         assertGt(aliceIncrease, 0);
         assertGt(bobIncrease, 0);
-        assertGt(aliceIncrease, bobIncrease * 2); // TODO: let Adam know this is missing in hardhat
+        assertGt(aliceIncrease, bobIncrease * 2); 
     }
 
     function testLeavesNoTokensInContractAfterAllContributorsWithdraw() public {

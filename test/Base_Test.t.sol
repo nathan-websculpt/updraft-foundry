@@ -50,7 +50,7 @@ abstract contract Base_Test is Test, Utils {
         );
 
         // approve updraft to spend UDP
-        _upd.approve(address(_updraft), 10000000e18); // TODO:
+        _upd.approve(address(_updraft), 10000000e18);
 
         // give alice and bob some UPD
         _upd.transfer(alice, TRANSFER_AMT);
