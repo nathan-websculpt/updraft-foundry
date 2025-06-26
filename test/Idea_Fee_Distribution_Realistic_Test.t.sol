@@ -133,17 +133,17 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
         uint256 expectedNetContributions = totalContributions - totalAntiSpamFees;
         // Log the contract balance before withdrawals
         uint256 balanceBeforeWithdrawals = token.balanceOf(address(_thisIdea));
-        console2.log("\nContract balance before withdrawals: %d UPD", balanceBeforeWithdrawals);
+        console2.log("\nContract balance before withdrawals: %s UPD", _formatUnits(balanceBeforeWithdrawals));
 
         // Log the contract's internal token tracking before withdrawals
         uint256 tokensBeforeWithdrawals = _thisIdea.tokens();
-        console2.log("Contract's internal token tracking before withdrawals: %d UPD", tokensBeforeWithdrawals);
+        console2.log("Contract's internal token tracking before withdrawals: %s UPD", _formatUnits(tokensBeforeWithdrawals));
 
         // Log expected values
-        console2.log("\nTotal contributions: %d", totalContributions);
-        console2.log("Total anti-spam fees: %d", totalAntiSpamFees);
-        console2.log("Total contributor fees: %d", totalContributorFees);
-        console2.log("Expected net contributions: %d", expectedNetContributions);
+        console2.log("\nTotal contributions: %s", _formatUnits(totalContributions));
+        console2.log("Total anti-spam fees: %s", _formatUnits(totalAntiSpamFees));
+        console2.log("Total contributor fees: %s", _formatUnits(totalContributorFees));
+        console2.log("Expected net contributions: %s", _formatUnits(expectedNetContributions));
 
         // Get all positions for each wallet
         uint256[] memory walletPositions = new uint256[](walletNames.length);
@@ -182,7 +182,7 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
             }
 
             walletWithdrawals.push(walletWithdrawn);
-            console2.log("Total withdrawn by %s wallet: %d UPD", walletNames[walletIndex], walletWithdrawn);
+            console2.log("Total withdrawn by %s wallet: %s UPD", walletNames[walletIndex], _formatUnits(walletWithdrawn));
         }
         // Calculate wallet contributions and profits
         console2.log("\n--- Wallet Contributions and Profits ---");
@@ -201,34 +201,34 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
                 }
             }
         
-            // uint256 walletProfit = walletWithdrawals[walletIndex] - walletContributionsAfterFee;
+            uint256 walletProfit = walletWithdrawals[walletIndex] - walletContributionsAfterFee;
         
             console2.log("%s wallet:", walletNames[walletIndex]);
-            console2.log("  Total contributions: %d UPD", walletContributions);
-            console2.log("  Contributions after fees: %d UPD", walletContributionsAfterFee);
-            console2.log("  Total withdrawals: %d UPD", walletWithdrawals[walletIndex]);
-            // console2.log("  Profit: %d UPD", walletProfit);
+            console2.log("  Total contributions: %s UPD", _formatUnits(walletContributions));
+            console2.log("  Contributions after fees: %s UPD", _formatUnits(walletContributionsAfterFee));
+            console2.log("  Total withdrawals: %s UPD", _formatUnits(walletWithdrawals[walletIndex]));
+            console2.log("  Profit: %s UPD", _formatUnits(walletProfit));
         
             totalWithdrawn += walletWithdrawals[walletIndex];
         }
         
         // Check the contract's token balance
         uint256 contractBalance = token.balanceOf(address(_thisIdea));
-        console2.log("\nContract balance after all withdrawals: ", contractBalance);
+        console2.log("\nContract balance after all withdrawals: %s", _formatUnits(contractBalance));
 
         // Check the contract's internal token tracking
         uint256 contractTokens = _thisIdea.tokens();
-        console2.log("Contract internal tokens tracking: ", contractTokens);
+        console2.log("Contract internal tokens tracking: %s", _formatUnits(contractTokens));
 
         // Check the contract's contributorFees
         _logContributorFees();
 
         // Verify that all tokens were withdrawn
         console2.log("\n--- Verification ---");
-        console2.log("Expected net contributions: ", expectedNetContributions);
-        console2.log("Total withdrawn: ", totalWithdrawn);
-        console2.log("Difference: ", expectedNetContributions - totalWithdrawn);
-        console2.log("Tokens left in contract: ", contractBalance);
+        console2.log("Expected net contributions: %s", _formatUnits(expectedNetContributions));
+        console2.log("Total withdrawn: %s", _formatUnits(totalWithdrawn));
+        console2.log("Difference: %s", _formatUnits(expectedNetContributions - totalWithdrawn));
+        console2.log("Tokens left in contract: %s", _formatUnits(contractBalance));
 
         // Calculate percentage of tokens left in contract
         if (contractBalance > 0) {
@@ -242,7 +242,7 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
     // PRIVATE HELPER FUNCTIONS
     function _logContributorFees() private {
         uint256 contributorFees = _thisIdea.contributorFees();
-        console2.log("Contributor fees: %d UPD", contributorFees);
+        console2.log("Contributor fees: %s UPD", _formatUnits(contributorFees));
     }
 
     // Helper function to track wallet balances and contributor fees during withdrawals
@@ -279,11 +279,11 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
                 int256 feesEarned = int256(withdrawn) - int256(originalContribution);
 
                 console2.log("Successfully withdrew %s wallet position %d:", walletName, positionIndex);
-                console2.log("  Withdrawn amount: %d UPD", withdrawn);
-                console2.log("  Original contribution: %d UPD", originalContribution);
-                console2.log("  Fees earned: %d UPD", feesEarned);
-                console2.log("  Contributor fees change: %d UPD", contributorFeesChange);
-                console2.log("  Contributor fees remaining: %d UPD", contributorFeesAfter);
+                console2.log("  Withdrawn amount: %s UPD", _formatUnits(withdrawn));
+                console2.log("  Original contribution: %s UPD", _formatUnits(originalContribution));
+                console2.log("  Fees earned: %s UPD", feesEarned);
+                console2.log("  Contributor fees change: %s UPD", _formatUnits(contributorFeesChange));
+                console2.log("  Contributor fees remaining: %s UPD", _formatUnits(contributorFeesAfter));
                 return withdrawn;
             }
         }        
@@ -307,34 +307,33 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
                 uint256 originalContribution = position.contributionAfterFee - position.contributorFeePaid;
 
                 // Get the original position tokens from the contract
-                uint256 originalPositionTokens = 0;
-                (originalPositionTokens, ) = _thisIdea.positionsByAddress(walletAddress, positionIndex);
+                (,uint256 originalPositionTokens) = _thisIdea.positionsByAddress(walletAddress, positionIndex);
 
                 // Calculate fees that would be earned in this withdrawal
                 uint256 feesToBeEarned = positionTokens - originalPositionTokens;
 
                 console2.log("Position check for %s wallet position %d:", walletName, positionIndex);
-                console2.log("  Original contribution: %d UPD", originalContribution);
+                console2.log("  Original contribution: %s UPD", _formatUnits(originalContribution));
                 console2.log("  Position details from contract:");
-                console2.log("    Tokens from checkPosition: %d UPD", positionTokens);
-                console2.log("    Original position tokens: %d UPD", originalPositionTokens);
-                console2.log("    Fees to be earned: %d UPD", feesToBeEarned);
-                console2.log("    Shares: %d shares", shares);
+                console2.log("    Tokens from checkPosition: %s UPD", _formatUnits(positionTokens));
+                console2.log("    Original position tokens: %s UPD", _formatUnits(originalPositionTokens));
+                console2.log("    Fees to be earned: %s UPD", _formatUnits(feesToBeEarned));
+                console2.log("    Shares: %s shares", _formatUnits(shares));
                 console2.log("  Contract state:");
-                console2.log("    Contract balance: %d UPD", contractBalance);
-                console2.log("    Contract tokens: %d UPD", contractTokens);
-                console2.log("    Contributor fees: %d UPD", contributorFees);
+                console2.log("    Contract balance: %s UPD", _formatUnits(contractBalance));
+                console2.log("    Contract tokens: %s UPD", _formatUnits(contractTokens));
+                console2.log("    Contributor fees: %s UPD", _formatUnits(contributorFees));
 
                 // Check if position is trying to withdraw more than what's left
                 if (positionTokens > contractBalance) {
-                    console2.log("  WARNING: Position is trying to withdraw %d UPD, but contract only has %d UPD", positionTokens, contractBalance);
-                    console2.log("  Difference: %d UPD", positionTokens - contractBalance);
+                    console2.log("  WARNING: Position is trying to withdraw %s UPD, but contract only has %s UPD", _formatUnits(positionTokens), _formatUnits(contractBalance));
+                    console2.log("  Difference: %s UPD", _formatUnits(positionTokens - contractBalance));
                 }
 
                 // Check if position is trying to withdraw more fees than available
                 if (feesToBeEarned > contributorFees) {
-                    console2.log("  WARNING: Position is trying to withdraw %d UPD in fees, but contract only has %d UPD in contributorFees", feesToBeEarned, contributorFees);
-                    console2.log("  Difference: %d UPD", feesToBeEarned - contributorFees);
+                    console2.log("  WARNING: Position is trying to withdraw %s UPD in fees, but contract only has %s UPD in contributorFees", _formatUnits(feesToBeEarned), _formatUnits(contributorFees));
+                    console2.log("  Difference: %s UPD", _formatUnits(feesToBeEarned - contributorFees));
                     console2.log("  This will likely cause an underflow in the contributorFees subtraction!");
                 }
                 return (positionTokens, shares);

@@ -10,3 +10,4 @@
 - Code reviews
 - handle anvil/sepolia/etc deployments testing
 - fuzz test values (start with constructors)
+- bring back GitHub CI

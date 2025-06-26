@@ -260,18 +260,18 @@ contract Idea_Test is Base_Test {
         (uint256 aliceInitialTokens, uint256 aliceInitialShares) = _thisIdea.checkPosition(alice, 0);
         (uint256 bobInitialTokens, uint256 bobInitialShares) = _thisIdea.checkPosition(bob, 0);
 
-        console2.log("owner position tokens: %d  UPD, shares: %d", ownerInitialTokens, ownerInitialShares);
-        console2.log("alice position tokens: %d  UPD, shares: %d", aliceInitialTokens, aliceInitialShares);
-        console2.log("bob   position tokens: %d  UPD, shares: %d \n", bobInitialTokens, bobInitialShares);
+        console2.log("owner position tokens: %s UPD, shares: %s", _formatUnits(ownerInitialTokens), _formatUnits(ownerInitialShares));
+        console2.log("alice position tokens: %s UPD, shares: %s", _formatUnits(aliceInitialTokens), _formatUnits(aliceInitialShares));
+        console2.log("bob   position tokens: %s UPD, shares: %s \n", _formatUnits(bobInitialTokens), _formatUnits(bobInitialShares));
 
         // get initial position tokens
         (, uint256 ownerOriginalTokens) = _thisIdea.positionsByAddress(owner, 0);
         (, uint256 aliceOriginalTokens) = _thisIdea.positionsByAddress(alice, 0);
         (, uint256 bobOriginalTokens) = _thisIdea.positionsByAddress(bob, 0);
 
-        console2.log("owner original positon tokens: %d UPD", ownerOriginalTokens);
-        console2.log("alice original positon tokens: %d UPD", aliceOriginalTokens);
-        console2.log("bob   original positon tokens: %d UPD \n", bobOriginalTokens);
+        console2.log("owner original positon tokens: %s UPD", _formatUnits(ownerOriginalTokens));
+        console2.log("alice original positon tokens: %s UPD", _formatUnits(aliceOriginalTokens));
+        console2.log("bob   original positon tokens: %s UPD \n", _formatUnits(bobOriginalTokens));
 
         // track wallet balances before withdrawals
         uint256 ownerBalanceBefore = _upd.balanceOf(owner);
@@ -295,10 +295,10 @@ contract Idea_Test is Base_Test {
         uint256 aliceWithdrawn = aliceBalanceAfter - aliceBalanceBefore;
         uint256 bobWithdrawn = bobBalanceAfter - bobBalanceBefore;
 
-        console2.log("owner withdrew: %d UPD", ownerWithdrawn);
-        console2.log("alice withdrew: %d UPD", aliceWithdrawn);
-        console2.log("bob   withdrew: %d UPD", bobWithdrawn);
-        console2.log("total withdrew: %d UPD \n", ownerWithdrawn + aliceWithdrawn + bobWithdrawn);
+        console2.log("owner withdrew: %s UPD", _formatUnits(ownerWithdrawn));
+        console2.log("alice withdrew: %s UPD", _formatUnits(aliceWithdrawn));
+        console2.log("bob   withdrew: %s UPD", _formatUnits(bobWithdrawn));
+        console2.log("total withdrew: %s UPD \n", _formatUnits(ownerWithdrawn + aliceWithdrawn + bobWithdrawn));
 
         // Get total tokens after all withdrawals
         uint256 totalTokensAfter = _thisIdea.tokens();
