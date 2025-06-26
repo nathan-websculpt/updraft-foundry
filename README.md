@@ -1,21 +1,29 @@
-dev note: adding in Dependencies
+### Using this project
+
+git and build
 
 ```bash
+git clone git@github.com:nathan-websculpt/updraft-foundry.git
+cd updraft-foundry
 forge install openzeppelin/openzeppelin-contracts --no-commit
+forge build
 
 ```
 
-Add remappings to `foundry.toml`
+test
 
 ```bash
-[profile.default]
-src = "src"
-out = "out"
-libs = ["lib"]
-remappings = [
-  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts",
-]
+forge test
+
 ```
+
+view logs
+
+```bash
+forge test -vv
+
+```
+
 
 #### TODO
 
