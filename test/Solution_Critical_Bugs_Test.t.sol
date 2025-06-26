@@ -50,7 +50,6 @@ contract Solution_Critical_Bugs_Test is Solution_Base_Test {
         vm.stopPrank();
     }
 
-
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
         (, Idea _thisIdea, ) = _createIdea();
