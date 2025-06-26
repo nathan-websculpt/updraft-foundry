@@ -3,8 +3,6 @@ pragma solidity ^0.8.27;
 
 import "./Idea_Fee_Distribution_Base_Test.t.sol";
 
-// TODO: same problem as in other Idea_Fee_Distribution tests -- underflow/overflow issues
-
 // forge test --mt testRealisticFeeDistribution -vv
 
 contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test {
@@ -62,33 +60,29 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
             console2.log("\n--- Cycle %d ---", cycle);
 
             // Each wallet makes a contribution in the cycle
-            for (uint160 walletIndex = 0; walletIndex < 5; walletIndex++) {
+            for (uint256 walletIndex = 0; walletIndex < walletNames.length; walletIndex++) {
                 // Skip first wallet in first cycle since it already contributed during creation
                 if(cycle == 0 && walletIndex == 0) continue;
+
+                address _thisWallet = _getThisWallet(walletIndex);
                 
                 // Vary contribution amounts to make it more realistic
                 uint256 baseAmt = 100 + (walletIndex * 50) + (cycle * 20);
                 uint256 contribution = baseAmt * 1e18;
                 
                 // Ensure we have enough allowance for each contribution
+
                 if(walletIndex == 0) {
                     _upd.approve(address(_thisIdea), contribution);
                     _thisIdea.contribute(contribution);
                 } else {
-                    vm.startPrank(address(walletIndex));
+                    vm.startPrank(_thisWallet);
                     _upd.approve(address(_thisIdea), contribution);
                     _thisIdea.contribute(contribution);
                     vm.stopPrank();
-
-                    // just for my own sanity // TODO: remove
-                    if (walletIndex == 0) assertEq(address(walletIndex), owner);
-                    else if (walletIndex == 1) assertEq(address(walletIndex), alice);
-                    else if (walletIndex == 2) assertEq(address(walletIndex), bob);
-                    else if (walletIndex == 3) assertEq(address(walletIndex), james);
-                    else if (walletIndex == 4) assertEq(address(walletIndex), kirk);
                 }
 
-                console2.log("%d wallet contributed %d UPD in cycle %d", walletIndex, baseAmt, cycle);
+                console2.log("%s wallet contributed %d UPD in cycle %d", walletNames[walletIndex], baseAmt, cycle);
 
                 uint256 contributionAfterFee = contribution - ANTI_SPAM_FEE;
                 uint256 contributorFeePaid = 0;
@@ -99,161 +93,150 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
                 }
 
                 // get the position index
-                uint256 numPositions = _thisIdea.numPositions(address(walletIndex));
-                console2.log("%d wallet has %d positions", walletIndex, numPositions); // TODO: remove after discussing with team
-
-                // TODO: talk with Adam - the 0 wallet has a positions in all cycles - there is an IF up above looking for walletIndex == 0 and cycle == 0 ... 
-                uint256 positionIndex;
-                if(numPositions > 0) {
-                    positionIndex = numPositions - 1;   
-                } else {
-                    positionIndex = 0;
-                }
+                uint256 positionIndex = _thisIdea.numPositions(_thisWallet) - 1; // TODO: first wallet has 0 positions in Cycle 1
 
                 positions.push(Position({wallet: walletNames[walletIndex], walletIndex: walletIndex, positionIndex: positionIndex, cycle: cycle, contribution: contribution, contributionAfterFee: contributionAfterFee, contributorFeePaid: contributorFeePaid, actualWithdrawn: 0}));
+            }
+            // Advance time to the next cycle
+            skip(cycleLength + 1);
+            console2.log("Advanced to cycle %d", cycle + 1);
+            _logContributorFees();
+        }
+        // Make a final small contribution to update cycles
+        uint256 finalContribution = ANTI_SPAM_FEE * 2;
+        // Ensure we have enough allowance for the final contribution
+        _upd.approve(address(_thisIdea), finalContribution);
+        _thisIdea.contribute(finalContribution);
+        console2.log("\nFirst wallet made small contribution in final cycle");
+        uint256 finalContributionAfterFee = finalContribution - ANTI_SPAM_FEE;
+        uint256 finalContributionContributorFee = finalContributionAfterFee * contributorFee / percentScale;
 
-                // Advance time to the next cycle
-                skip(cycleLength + 1);
-                console2.log("Advanced to cycle %d", cycle + 1);
-                _logContributorFees();
+        // Get the position index
+        uint256 finalPositionIndex = _thisIdea.numPositions(owner) - 1;
+        positions.push(Position({wallet: "first", walletIndex: 0, positionIndex: finalPositionIndex, cycle: 10, contribution: finalContribution, contributionAfterFee: finalContributionAfterFee, contributorFeePaid: finalContributionContributorFee, actualWithdrawn: 0}));
 
-                // Make a final small contribution to update cycles
-                uint256 finalContribution = ANTI_SPAM_FEE * 2;
-                // Ensure we have enough allowance for the final contribution
-                _upd.approve(address(_thisIdea), finalContribution);
-                _thisIdea.contribute(finalContribution);
-                console2.log("\nFirst wallet made small contribution in final cycle");
-                uint256 finalContributionAfterFee = finalContribution - ANTI_SPAM_FEE;
-                uint256 finalContributionContributorFee = finalContributionAfterFee * contributorFee / percentScale;
+        _logContributorFees();
+        
+        // Get the token contract
+        token = _thisIdea.token();
 
-                // Get the position index
-                uint256 finalPositionIndex = _thisIdea.numPositions(owner) - 1;
-                positions.push(Position({wallet: "first", walletIndex: 0, positionIndex: finalPositionIndex, cycle: 10, contribution: finalContribution, contributionAfterFee: finalContributionAfterFee, contributorFeePaid: finalContributionContributorFee, actualWithdrawn: 0}));
+        uint256 totalContributions = 0;
+        uint256 totalAntiSpamFees = 0;
+        uint256 totalContributorFees = 0;
 
-                _logContributorFees();
-                
-                // Get the token contract
-                token = _thisIdea.token();
+        for (uint256 i = 0; i < positions.length; i++) {
+            totalContributions += positions[i].contribution;
+            totalAntiSpamFees += (positions[i].contribution - positions[i].contributionAfterFee);
+            totalContributorFees += positions[i].contributorFeePaid;
+        }
 
-                uint256 totalContributions = 0;
-                uint256 totalAntiSpamFees = 0;
-                uint256 totalContributorFees = 0;
+        uint256 expectedNetContributions = totalContributions - totalAntiSpamFees;
+        // Log the contract balance before withdrawals
+        uint256 balanceBeforeWithdrawals = token.balanceOf(address(_thisIdea));
+        console2.log("\nContract balance before withdrawals: %d UPD", balanceBeforeWithdrawals);
 
-                for (uint256 i = 0; i < positions.length; i++) {
-                    totalContributions += positions[i].contribution;
-                    totalAntiSpamFees += (positions[i].contribution - positions[i].contributionAfterFee);
-                    totalContributorFees += positions[i].contributorFeePaid;
-                }
+        // Log the contract's internal token tracking before withdrawals
+        uint256 tokensBeforeWithdrawals = _thisIdea.tokens();
+        console2.log("Contract's internal token tracking before withdrawals: %d UPD", tokensBeforeWithdrawals);
 
-                uint256 expectedNetContributions = totalContributions - totalAntiSpamFees;
-                // Log the contract balance before withdrawals
-                uint256 balanceBeforeWithdrawals = token.balanceOf(address(_thisIdea));
-                console2.log("\nContract balance before withdrawals: %d UPD", balanceBeforeWithdrawals);
+        // Log expected values
+        console2.log("\nTotal contributions: %d", totalContributions);
+        console2.log("Total anti-spam fees: %d", totalAntiSpamFees);
+        console2.log("Total contributor fees: %d", totalContributorFees);
+        console2.log("Expected net contributions: %d", expectedNetContributions);
 
-                // Log the contract's internal token tracking before withdrawals
-                uint256 tokensBeforeWithdrawals = _thisIdea.tokens();
-                console2.log("Contract's internal token tracking before withdrawals: %d UPD", tokensBeforeWithdrawals);
+        // Get all positions for each wallet
+        uint256[] memory walletPositions = new uint256[](walletNames.length);
+        for (uint256 i = 0; i < walletNames.length; i++) {
+            uint256 numberPositions = _thisIdea.numPositions(_getThisWallet(i));
+            walletPositions[i] = numberPositions;
+            console2.log("%s wallet has %d positions", walletNames[i], numberPositions);
+        }
 
-                // Log expected values
-                console2.log("\nTotal contributions: %d", totalContributions);
-                console2.log("Total anti-spam fees: %d", totalAntiSpamFees);
-                console2.log("Total contributor fees: %d", totalContributorFees);
-                console2.log("Expected net contributions: %d", expectedNetContributions);
+        // Get all cycles
+        // obtain the length of the cycles array via its storage slot
+        // forge inspect Idea storage-layout --pretty
+        uint256 slot = 2;
+        uint256 cyclesArrayLength = uint256(vm.load(address(_thisIdea), bytes32(slot)));
 
-                // Get all positions for each wallet
-                uint256[] memory walletPositions = new uint256[](walletNames.length);
-                for (uint256 i = 0; i < walletNames.length; i++) {
-                   uint256 numberPositions = _thisIdea.numPositions(address(uint160(i)));
-                   walletPositions[i] = numberPositions;
-                   console2.log("%s wallet has %d positions", walletNames[i], numberPositions);
-                }
-
-                // Get all cycles
-                // obtain the length of the cycles array via its storage slot
-                // forge inspect Idea storage-layout --pretty
-                uint256 slot = 2;
-                uint256 cyclesArrayLength = uint256(vm.load(address(_thisIdea), bytes32(slot)));
-
-                if(cyclesArrayLength > 0) {
-                    for(uint256 i = 0; i < cyclesArrayLength; i++) {
-                        (uint256 number, uint256 shares, uint256 fees, bool hasContributions) = _thisIdea.cycles(i);
-                        // console2.log("Cycle %d: hasContributions=%s", i, hasContributions);
-                        // console2.log("\t   number=%d, shares=%d, fees=%d", number, shares, fees);
-                    }
-                }
-
-                console2.log("found %d cycles", cyclesArrayLength);
-
-                // Withdraw all positions for all wallets
-                console2.log("\n--- Withdrawing all positions ---");
-
-                for(uint256 walletIndex = 0; walletIndex < walletNames.length; walletIndex++) {
-                    console2.log("\n%s wallet positions:", walletNames[walletIndex]);
-                    uint256 walletWithdrawn = 0;
-
-                    for(uint256 positionIndex = 0; positionIndex < walletPositions[walletIndex]; positionIndex++){
-                        uint256 withdrawn = _trackWithdrawal(walletNames[walletIndex], walletIndex, positionIndex);
-                        walletWithdrawn += withdrawn;
-                    }
-
-                    walletWithdrawals.push(walletWithdrawn);
-                    console2.log("Total withdrawn by %s wallet: %d UPD", walletNames[walletIndex], walletWithdrawn);
-                }
-                // Calculate wallet contributions and profits
-                console2.log("\n--- Wallet Contributions and Profits ---");
-
-                uint256 totalWithdrawn = 0;
-
-                for (uint256 walletIndex = 0; walletIndex < walletNames.length; walletIndex++) {
-                    // Calculate total contributions by this wallet
-                    uint256 walletContributions = 0;
-                    uint256 walletContributionsAfterFee = 0;
-              
-                    for (uint256 positionIndex = 0; positionIndex < positions.length; positionIndex++) {
-                      if (positions[positionIndex].walletIndex == walletIndex) {
-                        walletContributions += positions[positionIndex].contribution;
-                        walletContributionsAfterFee += positions[positionIndex].contributionAfterFee - positions[positionIndex].contributorFeePaid;
-                      }
-                    }
-              
-                    uint256 walletProfit = walletWithdrawals[walletIndex] - walletContributionsAfterFee;
-              
-                    console2.log("%s wallet:", walletNames[walletIndex]);
-                    console2.log("  Total contributions: %d UPD", walletContributions);
-                    console2.log("  Contributions after fees: %d UPD", walletContributionsAfterFee);
-                    console2.log("  Total withdrawals: %d UPD", walletWithdrawals[walletIndex]);
-                    console2.log("  Profit: %d UPD", walletProfit);
-              
-                    totalWithdrawn += walletWithdrawals[walletIndex];
-                }
-                
-                // Check the contract's token balance
-                uint256 contractBalance = token.balanceOf(address(_thisIdea));
-                console2.log("\nContract balance after all withdrawals: ", contractBalance);
-
-                // Check the contract's internal token tracking
-                uint256 contractTokens = _thisIdea.tokens();
-                console2.log("Contract internal tokens tracking: ", contractTokens);
-
-                // Check the contract's contributorFees
-                _logContributorFees();
-
-                // Verify that all tokens were withdrawn
-                console2.log("\n--- Verification ---");
-                console2.log("Expected net contributions: ", expectedNetContributions);
-                console2.log("Total withdrawn: ", totalWithdrawn);
-                console2.log("Difference: ", expectedNetContributions - totalWithdrawn);
-                console2.log("Tokens left in contract: ", contractBalance);
-
-                // Calculate percentage of tokens left in contract
-                if (contractBalance > 0) {
-                    uint256 percentageLeft = (contractBalance * 100) / expectedNetContributions;
-                    console2.log("Percentage of tokens left in contract: ", percentageLeft, "%");
-                }
-
-                assertEq(contractBalance, 0);
+        if(cyclesArrayLength > 0) {
+            for(uint256 i = 0; i < cyclesArrayLength; i++) {
+                (uint256 number, uint256 shares, uint256 fees, bool hasContributions) = _thisIdea.cycles(i);
+                // console2.log("Cycle %d: hasContributions=%s", i, hasContributions);
+                // console2.log("\t   number=%d, shares=%d, fees=%d", number, shares, fees);
             }
         }
+
+        console2.log("found %d cycles", cyclesArrayLength);
+
+        // Withdraw all positions for all wallets
+        console2.log("\n--- Withdrawing all positions ---");
+
+        for(uint256 walletIndex = 0; walletIndex < walletNames.length; walletIndex++) {
+            console2.log("\n%s wallet positions:", walletNames[walletIndex]);
+            uint256 walletWithdrawn = 0;
+
+            for(uint256 positionIndex = 0; positionIndex < walletPositions[walletIndex]; positionIndex++){
+                uint256 withdrawn = _trackWithdrawal(walletNames[walletIndex], walletIndex, positionIndex);
+                walletWithdrawn += withdrawn;
+            }
+
+            walletWithdrawals.push(walletWithdrawn);
+            console2.log("Total withdrawn by %s wallet: %d UPD", walletNames[walletIndex], walletWithdrawn);
+        }
+        // Calculate wallet contributions and profits
+        console2.log("\n--- Wallet Contributions and Profits ---");
+
+        uint256 totalWithdrawn = 0;
+
+        for (uint256 walletIndex = 0; walletIndex < walletNames.length; walletIndex++) {
+            // Calculate total contributions by this wallet
+            uint256 walletContributions = 0;
+            uint256 walletContributionsAfterFee = 0;
+        
+            for (uint256 positionIndex = 0; positionIndex < positions.length; positionIndex++) {
+                if (positions[positionIndex].walletIndex == walletIndex) {
+                walletContributions += positions[positionIndex].contribution;
+                walletContributionsAfterFee += positions[positionIndex].contributionAfterFee - positions[positionIndex].contributorFeePaid;
+                }
+            }
+        
+            // uint256 walletProfit = walletWithdrawals[walletIndex] - walletContributionsAfterFee;
+        
+            console2.log("%s wallet:", walletNames[walletIndex]);
+            console2.log("  Total contributions: %d UPD", walletContributions);
+            console2.log("  Contributions after fees: %d UPD", walletContributionsAfterFee);
+            console2.log("  Total withdrawals: %d UPD", walletWithdrawals[walletIndex]);
+            // console2.log("  Profit: %d UPD", walletProfit);
+        
+            totalWithdrawn += walletWithdrawals[walletIndex];
+        }
+        
+        // Check the contract's token balance
+        uint256 contractBalance = token.balanceOf(address(_thisIdea));
+        console2.log("\nContract balance after all withdrawals: ", contractBalance);
+
+        // Check the contract's internal token tracking
+        uint256 contractTokens = _thisIdea.tokens();
+        console2.log("Contract internal tokens tracking: ", contractTokens);
+
+        // Check the contract's contributorFees
+        _logContributorFees();
+
+        // Verify that all tokens were withdrawn
+        console2.log("\n--- Verification ---");
+        console2.log("Expected net contributions: ", expectedNetContributions);
+        console2.log("Total withdrawn: ", totalWithdrawn);
+        console2.log("Difference: ", expectedNetContributions - totalWithdrawn);
+        console2.log("Tokens left in contract: ", contractBalance);
+
+        // Calculate percentage of tokens left in contract
+        if (contractBalance > 0) {
+            uint256 percentageLeft = (contractBalance * 100) / expectedNetContributions;
+            console2.log("Percentage of tokens left in contract: ", percentageLeft, "%");
+        }
+
+        assertEq(contractBalance, 0);        
     }
 
     // PRIVATE HELPER FUNCTIONS
@@ -264,7 +247,7 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
 
     // Helper function to track wallet balances and contributor fees during withdrawals
     function _trackWithdrawal(string memory walletName, uint256 walletIndex, uint256 positionIndex) private returns (uint256 withdrawn) {
-        address walletAddress = address(uint160(walletIndex));
+        address walletAddress = _getThisWallet(walletIndex);
         (uint256 positionTokens, uint256 shares) = _checkPositionDetails(walletName, walletIndex, positionIndex, walletAddress);
         
         uint256 balanceBefore = token.balanceOf(walletAddress);
@@ -293,12 +276,12 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
                 uint256 originalContribution = position.contributionAfterFee - position.contributorFeePaid;
 
                 // Calculate fees earned
-                // uint256 feesEarned = withdrawn - originalContribution;
+                int256 feesEarned = int256(withdrawn) - int256(originalContribution);
 
                 console2.log("Successfully withdrew %s wallet position %d:", walletName, positionIndex);
                 console2.log("  Withdrawn amount: %d UPD", withdrawn);
                 console2.log("  Original contribution: %d UPD", originalContribution);
-                // console2.log("  Fees earned: %d UPD", feesEarned);
+                console2.log("  Fees earned: %d UPD", feesEarned);
                 console2.log("  Contributor fees change: %d UPD", contributorFeesChange);
                 console2.log("  Contributor fees remaining: %d UPD", contributorFeesAfter);
                 return withdrawn;
@@ -357,6 +340,14 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
                 return (positionTokens, shares);
             }
         }
+    }
+
+    function _getThisWallet(uint256 walletIndex) private returns(address) {
+        if(walletIndex == 0) return owner;
+        else if(walletIndex == 1) return alice;
+        else if(walletIndex == 2) return bob;
+        else if(walletIndex == 3) return james;
+        else if(walletIndex == 4) return kirk;        
     }
 
     function _setupApprovals(uint _transferAmt) private {
