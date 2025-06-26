@@ -139,7 +139,7 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base_Test {
             uint256 withdrawn = balanceAfter - balanceBefore;
             firstWalletWithdrawn += withdrawn;
             console2.log("Successfully withdrew first wallet position %d: %d", i, withdrawn);
-            _logContractState(string(abi.encodePacked("After first wallet position ", i, " withdrawal")));
+            _logContractState(string(abi.encodePacked("After first wallet position ", vm.toString(i), " withdrawal")));
         }
         console2.log("Total withdrawn by first wallet: %d", firstWalletWithdrawn);
 
@@ -157,7 +157,7 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base_Test {
             uint256 withdrawn = balanceAfter - balanceBefore;
             secondWalletWithdrawn += withdrawn;
             console2.log("Successfully withdrew second wallet position %d: %d", i, withdrawn);
-            _logContractState(string(abi.encodePacked("After second wallet position ", i, " withdrawal")));
+            _logContractState(string(abi.encodePacked("After second wallet position ", vm.toString(i), " withdrawal")));
         }
         console2.log("Total withdrawn by second wallet: %d", secondWalletWithdrawn);
 
@@ -175,7 +175,7 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base_Test {
             uint256 withdrawn = balanceAfter - balanceBefore;
             thirdWalletWithdrawn += withdrawn;
             console2.log("Successfully withdrew third wallet position %d: %d", i, withdrawn);
-            _logContractState(string(abi.encodePacked("After third wallet position ", i, " withdrawal")));
+            _logContractState(string(abi.encodePacked("After third wallet position ", vm.toString(i), " withdrawal")));
         }
         console2.log("Total withdrawn by third wallet: %d", thirdWalletWithdrawn);
 
@@ -186,15 +186,17 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base_Test {
 
         console2.log("\nFirst wallet contributions: ", firstWalletContributions);
         console2.log("First wallet withdrawals: ", firstWalletWithdrawn);
-        // console2.log("First wallet profit: ", firstWalletWithdrawn - firstWalletContributions); // TODO:
+        int256 firstWalletProfit = int256(firstWalletWithdrawn) - int256(firstWalletContributions);
+        console2.log("First wallet profit: ", firstWalletProfit); 
 
         console2.log("\nSecond wallet contributions: ", secondWalletContributions);
         console2.log("Second wallet withdrawals: ", secondWalletWithdrawn);
-        // console2.log("Second wallet profit: ", secondWalletWithdrawn - secondWalletContributions); // TODO:
+        console2.log("Second wallet profit: ", secondWalletWithdrawn - secondWalletContributions);
 
         console2.log("\nThird wallet contributions: ", thirdWalletContributions);
         console2.log("Third wallet withdrawals: ", thirdWalletWithdrawn);
-        // console2.log("Third wallet profit: ", thirdWalletWithdrawn - thirdWalletContributions); // TODO:
+        int256 thirdWalletProfit = int256(thirdWalletWithdrawn) - int256(thirdWalletContributions);
+        console2.log("Third wallet profit: ", thirdWalletProfit);
 
         // Calculate total withdrawn
         uint256 totalWithdrawn = firstWalletWithdrawn + secondWalletWithdrawn + thirdWalletWithdrawn;

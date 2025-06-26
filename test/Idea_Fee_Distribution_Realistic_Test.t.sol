@@ -5,7 +5,7 @@ import "./Idea_Fee_Distribution_Base_Test.t.sol";
 
 // TODO: same problem as in other Idea_Fee_Distribution tests -- underflow/overflow issues
 
-// forge test --mt testFeeDistributionRealistic -vv
+// forge test --mt testRealisticFeeDistribution -vv
 
 contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test {
 
@@ -25,10 +25,10 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test
 
     Idea _thisIdea;
     IERC20 token;
-    string[] walletNames = ["first", "second", "third", "fourth", "fifth"]; // TODO: missing in 1 place
+    string[] walletNames = ["first", "second", "third", "fourth", "fifth"];
 
     // should handle fee distribution with realistic UPD amounts and many cycles/positions
-    function testFeeDistributionRealistic() public {
+    function testRealisticFeeDistribution() public {
         uint256 contributorFee = 100_000; // 10%
         console2.log("Creating idea with %d percent contributor fee", contributorFee / 10000);
         uint256 initialContribution = 500e18; // 500 UPD
