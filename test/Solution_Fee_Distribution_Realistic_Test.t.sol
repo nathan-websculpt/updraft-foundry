@@ -184,7 +184,6 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base_Test {
         assertEq(thirdBalanceAfterSecondCollection, thirdBalanceAfter);
     }
 
-
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
         (, Idea _thisIdea, ) = _createIdea();
