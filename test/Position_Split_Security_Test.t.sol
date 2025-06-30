@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "./Position_Base_Test.t.sol";
+import "./bases/Position_Base.t.sol";
 
-contract Position_Split_Security_Test is Position_Base_Test {
+contract Position_Split_Security_Test is Position_Base {
 
     // forge test --mt testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions -vv
     function testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions() public {

@@ -3,12 +3,12 @@ pragma solidity ^0.8.27;
 
 import {Test, console2, Vm} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {Updraft} from "../src/Updraft.sol";
-import {Idea} from "../src/Idea.sol";
-import {UPDToken} from "../src/UPDToken.sol";
-import {Utils} from "./lib/Utils.sol";
+import {Updraft} from "../../src/Updraft.sol";
+import {Idea} from "../../src/Idea.sol";
+import {UPDToken} from "../../src/UPDToken.sol";
+import {Utils} from "../lib/Utils.sol";
 
-abstract contract Idea_Fee_Distribution_Base_Test is Test, Utils {
+abstract contract Idea_Fee_Distribution_Base is Test, Utils {
     
     Updraft _updraft;
     UPDToken _upd;

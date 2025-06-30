@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "./Base_Test.t.sol";
+import "./bases/Base.t.sol";
 
-contract Idea_Test is Base_Test {
+contract Idea_Test is Base {
 
     uint256 AIRDROP_AMT = 1_000_000e18; // 1 million UPD - truly massive airdrop to test scaling
 

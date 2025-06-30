@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "./Solution_Base_Test.t.sol";
+import "./bases/Solution_Base.t.sol";
 
-contract Solution_Critical_Bugs_Test is Solution_Base_Test {
+contract Solution_Critical_Bugs_Test is Solution_Base {
     
     // Division by Zero Vulnerabilities
     function testHandlesTotalSharesWhenNoCyclesExist() public {

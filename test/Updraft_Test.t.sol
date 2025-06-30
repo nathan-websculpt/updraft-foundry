@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "./Base_Test.t.sol";
+import "./bases/Base.t.sol";
 
-contract Updraft_Test is Base_Test {    
+contract Updraft_Test is Base {    
     
     function testUpdraftApprovedToSpendUPD() public view {
         assertEq(_upd.allowance(owner, address(_updraft)), 10000000e18);

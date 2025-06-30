@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "./Position_Base_Test.t.sol";
+import "./bases/Position_Base.t.sol";
 
-contract Position_Self_Transfer_Test is Position_Base_Test {
+contract Position_Self_Transfer_Test is Position_Base {
     // Idea contract should delete the original position and create a new one when transferring to yourself without gaining extra tokens
     // forge test --mt testIdeaDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens -vv
     function testIdeaDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens() public {

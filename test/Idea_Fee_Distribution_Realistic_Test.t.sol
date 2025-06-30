@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "./Idea_Fee_Distribution_Base_Test.t.sol";
+import "./bases/Idea_Fee_Distribution_Base.t.sol";
 
 // forge test --mt testRealisticFeeDistribution -vv
 
-contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base_Test {
+contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base {
 
     struct Position {
         string wallet;

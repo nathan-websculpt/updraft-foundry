@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "./Solution_Base_Test.t.sol";
+import "./bases/Solution_Base.t.sol";
 
 // forge test --mt testAllowsContributorFeesToBeFullyCollected -vv
 
-contract Solution_Zero_Balance_Test is Solution_Base_Test {
+contract Solution_Zero_Balance_Test is Solution_Base {
     IERC20 token;
 
     function testAllowsContributorFeesToBeFullyCollected() public {
