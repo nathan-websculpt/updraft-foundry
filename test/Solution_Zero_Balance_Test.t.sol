@@ -80,7 +80,7 @@ contract Solution_Zero_Balance_Test is Solution_Base {
         console2.log("Third wallet has ", thirdWalletPositions, " positions");
 
         // Log each position's details
-        console2.log('\n--- Position details ---');
+        console2.log("\n--- Position details ---");
         for (uint256 i = 0; i < firstWalletPositions; i++) {
             (uint256 feesEarned, uint256 shares) = _thisSolution.checkPosition(owner, i);
             console2.log("First wallet position %d: feesEarned=%d, shares=%d", i, feesEarned, shares);
@@ -143,15 +143,15 @@ contract Solution_Zero_Balance_Test is Solution_Base {
         console2.log("Contract totalTokens after: ", tokensContributedAfter - tokensWithdrawnAfter);
 
         // Get information about cycles
-        console2.log('\n--- Cycle information ---');
+        console2.log("\n--- Cycle information ---");
 
         // obtain the length of the cycles array via its storage slot
         // forge inspect Solution storage-layout --pretty
         uint256 slot = 7;
         uint256 cyclesArrayLength = uint256(vm.load(address(_thisSolution), bytes32(slot)));
 
-        if(cyclesArrayLength > 0) {
-            for(uint256 i = 0; i < cyclesArrayLength; i++) {
+        if (cyclesArrayLength > 0) {
+            for (uint256 i = 0; i < cyclesArrayLength; i++) {
                 (uint256 number, uint256 shares, uint256 fees, bool hasContributions) = _thisSolution.cycles(i);
                 console2.log("Cycle %d: hasContributions=%s", i, hasContributions);
                 console2.log("\t   number=%d, shares=%d, fees=%d", number, shares, fees);
@@ -166,7 +166,8 @@ contract Solution_Zero_Balance_Test is Solution_Base {
         // Calculate expected contributor fees
         // First cycle contributions don't have contributor fees
         uint256 firstCycleContributions = firstContribution + secondContribution + thirdContribution;
-        uint256 laterCycleContributions = firstContributionSecondCycle + secondContributionThirdCycle + (ANTI_SPAM_FEE * 2);
+        uint256 laterCycleContributions =
+            firstContributionSecondCycle + secondContributionThirdCycle + (ANTI_SPAM_FEE * 2);
         uint256 expectedContributorFees = (laterCycleContributions * contributorFeePercent) / percentScale;
 
         console2.log("\nFirst cycle contributions: ", firstCycleContributions);
@@ -191,7 +192,9 @@ contract Solution_Zero_Balance_Test is Solution_Base {
         assertLe(absDifference, maxAllowedDifference);
 
         if (absDifference > 0) {
-            console2.log("Note: There was a difference of ", absDifference, " wei, which is acceptable due to division rounding");
+            console2.log(
+                "Note: There was a difference of ", absDifference, " wei, which is acceptable due to division rounding"
+            );
         }
 
         // Also verify that the contract's internal accounting is correct
@@ -208,15 +211,18 @@ contract Solution_Zero_Balance_Test is Solution_Base {
         assertLe(absBalanceDifference, maxAllowedDifference);
 
         if (absBalanceDifference > 0) {
-            console2.log("Note: There was a balance difference of ", absBalanceDifference, " wei, which is acceptable due to division rounding");
+            console2.log(
+                "Note: There was a balance difference of ",
+                absBalanceDifference,
+                " wei, which is acceptable due to division rounding"
+            );
         }
     }
 
-
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
-        (, Idea _thisIdea, ) = _createIdea();
-        (, Solution _thisSolution, ) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
 
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
 

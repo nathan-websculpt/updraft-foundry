@@ -4,8 +4,7 @@ pragma solidity ^0.8.27;
 import "./bases/Base.t.sol";
 
 contract Solution_Test is Base {
-
-    function testAllowsUsersToContributeAndCreatePosition() public {    
+    function testAllowsUsersToContributeAndCreatePosition() public {
         Solution _thisSolution = _setup(); // makes an idea, a solution, and approves UPD spending on solution for owner, alice, and bob
 
         // alice contributes
@@ -29,13 +28,13 @@ contract Solution_Test is Base {
         // Get the position directly from the contract's storage
         // This is a more direct way to check the position's contribution
         uint256 positionIndex = 0;
-        (uint256 positionContribution, , , , ) = _thisSolution.positionsByAddress(alice, positionIndex);
+        (uint256 positionContribution,,,,) = _thisSolution.positionsByAddress(alice, positionIndex);
 
         uint256 expectedFee = CONTRIBUTION_AMT * contributorFee / percentScale;
 
         // Verify the position contribution based on the cycle
         uint256 currentCycle = _thisSolution.currentCycleNumber();
-        if(currentCycle == 0) {
+        if (currentCycle == 0) {
             assertEq(positionContribution, CONTRIBUTION_AMT);
         } else {
             // In later cycles, fees are charged, so position contribution equals amount minus fee
@@ -66,7 +65,7 @@ contract Solution_Test is Base {
         uint256 lastCycleIndex = 1;
 
         // Check the cycle fees in the last stored cycle
-        (, , uint256 cycleFees, ) = _thisSolution.cycles(lastCycleIndex);
+        (,, uint256 cycleFees,) = _thisSolution.cycles(lastCycleIndex);
 
         uint256 thirdContributionFee = CONTRIBUTION_AMT * contributorFee / percentScale;
         assertEq(cycleFees, thirdContributionFee);
@@ -78,7 +77,7 @@ contract Solution_Test is Base {
         vm.prank(alice);
         _thisSolution.contribute(CONTRIBUTION_AMT);
 
-        (uint256 initialPositionTokens, ) = _thisSolution.checkPosition(alice, 0);
+        (uint256 initialPositionTokens,) = _thisSolution.checkPosition(alice, 0);
         uint256 cycleLength = _thisSolution.cycleLength();
         skip(cycleLength + 1);
 
@@ -94,7 +93,7 @@ contract Solution_Test is Base {
         uint256 balanceBefore = _upd.balanceOf(alice);
 
         // Get the position's last collected cycle index
-        (, , , uint256 lastCollectedCycleIndex, ) = _thisSolution.positionsByAddress(alice, 0);
+        (,,, uint256 lastCollectedCycleIndex,) = _thisSolution.positionsByAddress(alice, 0);
 
         // Get the current cycle index by checking the current cycle number
         uint256 currentCycleNumber = _thisSolution.currentCycleNumber();
@@ -113,9 +112,9 @@ contract Solution_Test is Base {
         assertGt(balanceAfter, balanceBefore);
 
         // Check that the position's lastCollectedCycleIndex was updated
-        (, , , uint256 updatedLastCollectedCycleIndex, ) = _thisSolution.positionsByAddress(alice, 0);
+        (,,, uint256 updatedLastCollectedCycleIndex,) = _thisSolution.positionsByAddress(alice, 0);
         assertGt(updatedLastCollectedCycleIndex, lastCollectedCycleIndex);
-        
+
         // Verify that collecting fees again doesn't change the balance
         vm.prank(alice);
         _thisSolution.collectFees(0);
@@ -292,7 +291,7 @@ contract Solution_Test is Base {
         uint256 finalBalance = _upd.balanceOf(owner);
         assertEq(finalBalance, initialBalance + stakeToRemove);
     }
-     
+
     function testDoesNotAllowRemovingStakeBeforeGoalIsReached() public {
         Solution _thisSolution = _setup();
         uint256 stakeToRemove = 10e18;
@@ -303,11 +302,11 @@ contract Solution_Test is Base {
     // REFUND
     function testShouldAllowRefundsIfGoalFails() public {
         Solution _thisSolution = _setup();
-        
+
         vm.prank(alice);
         _thisSolution.contribute(CONTRIBUTION_AMT);
 
-        (uint256 positionTokens, ) = _thisSolution.checkPosition(alice, 0);
+        (uint256 positionTokens,) = _thisSolution.checkPosition(alice, 0);
 
         // advance time past the deadline
         uint256 deadline = _thisSolution.deadline();
@@ -326,8 +325,8 @@ contract Solution_Test is Base {
         // Verify balance changed
         assertNotEq(balanceAfter, balanceBefore);
 
-        // verify position is marked as refunded        
-        (, , , , bool position) = _thisSolution.positionsByAddress(alice, 0);
+        // verify position is marked as refunded
+        (,,,, bool position) = _thisSolution.positionsByAddress(alice, 0);
         assert(position);
     }
 
@@ -417,7 +416,7 @@ contract Solution_Test is Base {
     function testShouldAllowRefundsForPositionsCreatedAfterGoalExtension() public {
         Solution _thisSolution = _setup();
 
-        uint256 initialGoal = _thisSolution.fundingGoal();        
+        uint256 initialGoal = _thisSolution.fundingGoal();
 
         _upd.transfer(alice, initialGoal);
         vm.startPrank(alice);
@@ -429,7 +428,7 @@ contract Solution_Test is Base {
         uint256 tokensContributed = _thisSolution.tokensContributed();
         uint256 fundingGoal = _thisSolution.fundingGoal();
         assertGe(tokensContributed, fundingGoal);
-        
+
         // Extend the goal (this sets goalExtendedTime to current timestamp)
         uint256 newGoal = initialGoal * 2;
         _thisSolution.extendGoal(newGoal);
@@ -509,12 +508,12 @@ contract Solution_Test is Base {
         Solution _thisSolution = _setup();
         _thisSolution.contribute(CONTRIBUTION_AMT);
 
-        (uint256 positionTokens, ) = _thisSolution.checkPosition(owner, 0);
+        (uint256 positionTokens,) = _thisSolution.checkPosition(owner, 0);
 
         _thisSolution.transferPosition(bob, 0);
 
         // verify position amount is the same
-        (uint256 transferredPositionTokens, ) = _thisSolution.checkPosition(bob, 0);
+        (uint256 transferredPositionTokens,) = _thisSolution.checkPosition(bob, 0);
         assertEq(positionTokens, transferredPositionTokens);
     }
 
@@ -522,7 +521,7 @@ contract Solution_Test is Base {
         Solution _thisSolution = _setup();
         _thisSolution.contribute(CONTRIBUTION_AMT);
 
-        (uint256 positionTokens, ) = _thisSolution.checkPosition(owner, 0);
+        (uint256 positionTokens,) = _thisSolution.checkPosition(owner, 0);
 
         // split position into two parts
         _thisSolution.split(0, 2);
@@ -530,17 +529,16 @@ contract Solution_Test is Base {
         assertEq(_thisSolution.numPositions(owner), 2);
 
         // verifiy original position has half the tokens
-        (uint256 originalPositionTokens, ) = _thisSolution.checkPosition(owner, 0);
-        (uint256 newPositionTokens, ) = _thisSolution.checkPosition(owner, 1);
+        (uint256 originalPositionTokens,) = _thisSolution.checkPosition(owner, 0);
+        (uint256 newPositionTokens,) = _thisSolution.checkPosition(owner, 1);
         assertEq(originalPositionTokens, positionTokens / 2);
         assertEq(newPositionTokens, positionTokens / 2);
-
     }
 
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
-        (, Idea _thisIdea, ) = _createIdea();
-        (, Solution _thisSolution, ) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
 
         _upd.approve(address(_thisSolution), 100000000000e18);
 

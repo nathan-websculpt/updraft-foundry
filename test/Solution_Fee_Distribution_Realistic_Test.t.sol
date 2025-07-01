@@ -4,7 +4,6 @@ pragma solidity ^0.8.27;
 import "./bases/Solution_Base.t.sol";
 
 contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
-
     // should distribute fees correctly with multiple contributors over multiple cycles
     function testDistributesFeesCorrectlyWithMultipleContributorsOverMultipleCycles() public {
         Solution _thisSolution = _setup();
@@ -76,18 +75,36 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
         (uint256 thirdFeesEarned1, uint256 thirdShares1) = _thisSolution.checkPosition(bob, 0);
         (uint256 thirdFeesEarned2, uint256 thirdShares2) = _thisSolution.checkPosition(bob, 1);
 
-        console2.log("First position fees earned: %s UPD, shares: %s", _formatUnits(firstFeesEarned), _formatUnits(firstShares));
-        console2.log("Second position 1 fees earned: %s UPD, shares: %s", _formatUnits(secondFeesEarned1), _formatUnits(secondShares1));
-        console2.log("Second position 2 fees earned: %s UPD, shares: %s", _formatUnits(secondFeesEarned2), _formatUnits(secondShares2));
-        console2.log("Third position 1 fees earned: %s UPD, shares: %s", _formatUnits(thirdFeesEarned1), _formatUnits(thirdShares1));
-        console2.log("Third position 2 fees earned: %s UPD, shares: %s", _formatUnits(thirdFeesEarned2), _formatUnits(thirdShares2));
+        console2.log(
+            "First position fees earned: %s UPD, shares: %s", _formatUnits(firstFeesEarned), _formatUnits(firstShares)
+        );
+        console2.log(
+            "Second position 1 fees earned: %s UPD, shares: %s",
+            _formatUnits(secondFeesEarned1),
+            _formatUnits(secondShares1)
+        );
+        console2.log(
+            "Second position 2 fees earned: %s UPD, shares: %s",
+            _formatUnits(secondFeesEarned2),
+            _formatUnits(secondShares2)
+        );
+        console2.log(
+            "Third position 1 fees earned: %s UPD, shares: %s",
+            _formatUnits(thirdFeesEarned1),
+            _formatUnits(thirdShares1)
+        );
+        console2.log(
+            "Third position 2 fees earned: %s UPD, shares: %s",
+            _formatUnits(thirdFeesEarned2),
+            _formatUnits(thirdShares2)
+        );
 
         // Get original position contributions
-        (uint256 firstOriginalContribution, , , ,) = _thisSolution.positionsByAddress(owner, 0);
-        (uint256 secondOriginalContribution1, , , ,) = _thisSolution.positionsByAddress(alice, 0);
-        (uint256 secondOriginalContribution2, , , ,) = _thisSolution.positionsByAddress(alice, 1);
-        (uint256 thirdOriginalContribution1, , , ,) = _thisSolution.positionsByAddress(bob, 0);
-        (uint256 thirdOriginalContribution2, , , ,) = _thisSolution.positionsByAddress(bob, 1);
+        (uint256 firstOriginalContribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
+        (uint256 secondOriginalContribution1,,,,) = _thisSolution.positionsByAddress(alice, 0);
+        (uint256 secondOriginalContribution2,,,,) = _thisSolution.positionsByAddress(alice, 1);
+        (uint256 thirdOriginalContribution1,,,,) = _thisSolution.positionsByAddress(bob, 0);
+        (uint256 thirdOriginalContribution2,,,,) = _thisSolution.positionsByAddress(bob, 1);
 
         console2.log("First original position contribution: %s UPD", _formatUnits(firstOriginalContribution));
         console2.log("Second original position 1 contribution: %s UPD", _formatUnits(secondOriginalContribution1));
@@ -131,11 +148,11 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
 
         // Calculate the total shares
         uint256 totalShares = firstShares + secondShares1 + secondShares2 + thirdShares1 + thirdShares2;
-        console2.log("Total shares: %s", _formatUnits(totalShares));    
+        console2.log("Total shares: %s", _formatUnits(totalShares));
 
         // Calculate the share distribution
         uint256 firstSharePercentage = (firstShares * 1e18) / totalShares;
-        uint256 secondSharePercentage = ((secondShares1 + secondShares2) * 1e18)/ totalShares;
+        uint256 secondSharePercentage = ((secondShares1 + secondShares2) * 1e18) / totalShares;
         uint256 thirdSharePercentage = ((thirdShares1 + thirdShares2) * 1e18) / totalShares;
 
         console2.log("First wallet share percentage: %s percent", _formatUnits(firstSharePercentage * 100));
@@ -186,8 +203,8 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
 
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
-        (, Idea _thisIdea, ) = _createIdea();
-        (, Solution _thisSolution, ) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
 
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
 

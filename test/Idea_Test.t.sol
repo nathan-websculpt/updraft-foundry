@@ -4,18 +4,17 @@ pragma solidity ^0.8.27;
 import "./bases/Base.t.sol";
 
 contract Idea_Test is Base {
-
     uint256 AIRDROP_AMT = 1_000_000e18; // 1 million UPD - truly massive airdrop to test scaling
 
     function testUserCanContributeToIdea() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
         (uint256 tokens, uint256 expectedAmt) = _basicContribution(_thisIdea);
         assertEq(tokens, expectedAmt);
     }
 
     // should correctly handle contributor fees in cycles after the first
     function testHandlesContributorFeesInCyclesAfterTheFirst() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
 
         uint256 contributorFee = _thisIdea.contributorFee();
         uint256 percentScale = _thisIdea.percentScale();
@@ -30,8 +29,7 @@ contract Idea_Test is Base {
         _thisIdea.contribute(CONTRIBUTION_AMT);
         vm.stopPrank();
 
-
-        (uint256 tokens, ) = _thisIdea.checkPosition(alice, 0);
+        (uint256 tokens,) = _thisIdea.checkPosition(alice, 0);
         uint256 fee = _max(ANTI_SPAM_FEE, (CONTRIBUTION_AMT * percentFee) / percentScale);
         uint256 expectedContributorFee = (CONTRIBUTION_AMT - ANTI_SPAM_FEE) * contributorFee / percentScale;
         uint256 expectedAmount = CONTRIBUTION_AMT - ANTI_SPAM_FEE - expectedContributorFee;
@@ -40,7 +38,7 @@ contract Idea_Test is Base {
     }
 
     function testDoesNotCollectContributorFeesInFirstCycle() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
         (uint256 tokens, uint256 expectedAmt) = _basicContribution(_thisIdea);
         assertEq(tokens, expectedAmt);
 
@@ -49,15 +47,15 @@ contract Idea_Test is Base {
     }
 
     function testShouldNotAllowAirdropsInFirstCycle() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
         vm.expectRevert(Idea.CannotAirdropInFirstCycle.selector);
-        _thisIdea.airdrop(AIRDROP_AMT);        
+        _thisIdea.airdrop(AIRDROP_AMT);
     }
 
     function testAllowsContributorsToWithdrawTheirPositions() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
         uint256 initialBalance = _upd.balanceOf(owner);
-        (uint256 tokens, ) = _thisIdea.checkPosition(owner, 0);
+        (uint256 tokens,) = _thisIdea.checkPosition(owner, 0);
 
         // withdraw position
         _thisIdea.withdraw(0);
@@ -73,7 +71,7 @@ contract Idea_Test is Base {
 
     // should correctly distribute contributor fees when withdrawing after multiple cycles
     function testCorrectlyDistributesContributorFeesWhenWithdrawingAfterMultipleCycles() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
 
         _upd.approve(address(_thisIdea), TRANSFER_AMT);
         vm.prank(alice);
@@ -87,17 +85,17 @@ contract Idea_Test is Base {
         _thisIdea.contribute(CONTRIBUTION_AMT);
 
         // Get initial position amount
-        (uint256 initialPositionTokens, ) = _thisIdea.checkPosition(alice, 0);
+        (uint256 initialPositionTokens,) = _thisIdea.checkPosition(alice, 0);
 
         // advance cycles
-        for(uint256 i = 0; i < 3; i++) {
+        for (uint256 i = 0; i < 3; i++) {
             skip(cycleLength + 1);
             // make a small contribution to update cycles (this is owner contributing)
             _thisIdea.contribute(ANTI_SPAM_FEE * 2);
         }
 
         // Get position amount after cycles
-        (uint256 finalPositionTokens, ) = _thisIdea.checkPosition(alice, 0);
+        (uint256 finalPositionTokens,) = _thisIdea.checkPosition(alice, 0);
 
         // Verify position tokens increased due to fee distribution
         assertGt(finalPositionTokens, initialPositionTokens);
@@ -118,7 +116,7 @@ contract Idea_Test is Base {
 
     // AIRDROP
     function testIncreasesTotalTokensInContract() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 2 ether);
 
         uint256 cycleLength = _thisIdea.cycleLength();
@@ -147,7 +145,7 @@ contract Idea_Test is Base {
     }
 
     function testCreatePositionWithZeroTokensForTheAirDropper() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 2 ether);
 
         uint256 cycleLength = _thisIdea.cycleLength();
@@ -167,7 +165,7 @@ contract Idea_Test is Base {
         // check that a new position was created
         assertEq(positionsAfterAirdrop, initialPositions + 1);
 
-        uint256 positionIndex = positionsAfterAirdrop -1;
+        uint256 positionIndex = positionsAfterAirdrop - 1;
 
         // Check that the position has 0 tokens
         (, uint256 tokens) = _thisIdea.positionsByAddress(owner, positionIndex); // gets Position Struct
@@ -175,7 +173,7 @@ contract Idea_Test is Base {
     }
 
     function testDistributesAirdroppedTokensProportionallyToContributors() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
 
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 4 ether);
         vm.prank(alice);
@@ -196,8 +194,8 @@ contract Idea_Test is Base {
         _thisIdea.contribute(ANTI_SPAM_FEE * 2);
 
         // get initial positions
-        (uint256 aliceInitialTokens, ) = _thisIdea.checkPosition(alice, 0);
-        (uint256 bobInitialTokens, ) = _thisIdea.checkPosition(bob, 0);
+        (uint256 aliceInitialTokens,) = _thisIdea.checkPosition(alice, 0);
+        (uint256 bobInitialTokens,) = _thisIdea.checkPosition(bob, 0);
 
         // owner airdrops to idea
         _thisIdea.airdrop(AIRDROP_AMT);
@@ -208,8 +206,8 @@ contract Idea_Test is Base {
         _thisIdea.contribute(ANTI_SPAM_FEE * 2);
 
         // check positions after airdrop
-        (uint256 aliceAfterAirdropTokens, ) = _thisIdea.checkPosition(alice, 0);
-        (uint256 bobAfterAirdropTokens, ) = _thisIdea.checkPosition(bob, 0);
+        (uint256 aliceAfterAirdropTokens,) = _thisIdea.checkPosition(alice, 0);
+        (uint256 bobAfterAirdropTokens,) = _thisIdea.checkPosition(bob, 0);
 
         assertGt(aliceAfterAirdropTokens, aliceInitialTokens);
         assertGt(bobAfterAirdropTokens, bobInitialTokens);
@@ -221,11 +219,11 @@ contract Idea_Test is Base {
 
         assertGt(aliceIncrease, 0);
         assertGt(bobIncrease, 0);
-        assertGt(aliceIncrease, bobIncrease * 2); 
+        assertGt(aliceIncrease, bobIncrease * 2);
     }
 
     function testLeavesNoTokensInContractAfterAllContributorsWithdraw() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
 
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 4 ether);
         vm.prank(alice);
@@ -260,9 +258,21 @@ contract Idea_Test is Base {
         (uint256 aliceInitialTokens, uint256 aliceInitialShares) = _thisIdea.checkPosition(alice, 0);
         (uint256 bobInitialTokens, uint256 bobInitialShares) = _thisIdea.checkPosition(bob, 0);
 
-        console2.log("owner position tokens: %s UPD, shares: %s", _formatUnits(ownerInitialTokens), _formatUnits(ownerInitialShares));
-        console2.log("alice position tokens: %s UPD, shares: %s", _formatUnits(aliceInitialTokens), _formatUnits(aliceInitialShares));
-        console2.log("bob   position tokens: %s UPD, shares: %s \n", _formatUnits(bobInitialTokens), _formatUnits(bobInitialShares));
+        console2.log(
+            "owner position tokens: %s UPD, shares: %s",
+            _formatUnits(ownerInitialTokens),
+            _formatUnits(ownerInitialShares)
+        );
+        console2.log(
+            "alice position tokens: %s UPD, shares: %s",
+            _formatUnits(aliceInitialTokens),
+            _formatUnits(aliceInitialShares)
+        );
+        console2.log(
+            "bob   position tokens: %s UPD, shares: %s \n",
+            _formatUnits(bobInitialTokens),
+            _formatUnits(bobInitialShares)
+        );
 
         // get initial position tokens
         (, uint256 ownerOriginalTokens) = _thisIdea.positionsByAddress(owner, 0);
@@ -284,7 +294,7 @@ contract Idea_Test is Base {
         _thisIdea.withdraw(0);
         vm.prank(bob);
         _thisIdea.withdraw(0);
-        
+
         // track wallet balances aftet withdrawals
         uint256 ownerBalanceAfter = _upd.balanceOf(owner);
         uint256 aliceBalanceAfter = _upd.balanceOf(alice);
@@ -311,28 +321,28 @@ contract Idea_Test is Base {
     }
 
     function testTransferringPositions() public {
-        (, Idea _thisIdea, ) = _createIdea();
-        
-        (uint256 initialTokens, ) = _thisIdea.checkPosition(owner, 0);
+        (, Idea _thisIdea,) = _createIdea();
+
+        (uint256 initialTokens,) = _thisIdea.checkPosition(owner, 0);
 
         // transfer position to another wallet
         _thisIdea.transferPosition(alice, 0);
 
         // Verify first wallet no longer has the position
         vm.expectRevert(Idea.PositionDoesNotExist.selector);
-        (uint256 finalTokens, ) = _thisIdea.checkPosition(owner, 0);
+        (uint256 finalTokens,) = _thisIdea.checkPosition(owner, 0);
 
         // Verify second wallet now has the position
         assertEq(_thisIdea.numPositions(alice), 1);
 
         // Verify position amount is the same
-        (uint256 transferredPositionTokens, ) = _thisIdea.checkPosition(alice, 0);
+        (uint256 transferredPositionTokens,) = _thisIdea.checkPosition(alice, 0);
         assertEq(transferredPositionTokens, initialTokens);
     }
 
     function testAllowsSplittingPositions() public {
-        (, Idea _thisIdea, ) = _createIdea();
-        (uint256 initialTokens, ) = _thisIdea.checkPosition(owner, 0);
+        (, Idea _thisIdea,) = _createIdea();
+        (uint256 initialTokens,) = _thisIdea.checkPosition(owner, 0);
 
         // split position into two
         _thisIdea.split(0, 2);
@@ -341,11 +351,11 @@ contract Idea_Test is Base {
         assertEq(_thisIdea.numPositions(owner), 2);
 
         // verify that original position has half the tokens
-        (uint256 originalPositionTokens, ) = _thisIdea.checkPosition(owner, 0);
+        (uint256 originalPositionTokens,) = _thisIdea.checkPosition(owner, 0);
         assertEq(originalPositionTokens, initialTokens / 2);
 
         // verify new position has half the tokens
-        (uint256 newPositionTokens, ) = _thisIdea.checkPosition(owner, 1);
+        (uint256 newPositionTokens,) = _thisIdea.checkPosition(owner, 1);
         assertEq(newPositionTokens, initialTokens / 2);
     }
 
@@ -358,7 +368,7 @@ contract Idea_Test is Base {
         vm.stopPrank();
 
         // check that position was created successfully
-        (uint256 tokens, ) = _thisIdea.checkPosition(alice);
+        (uint256 tokens,) = _thisIdea.checkPosition(alice);
         uint256 expectedAmt = _getExpectedAmt();
         return (tokens, expectedAmt);
     }

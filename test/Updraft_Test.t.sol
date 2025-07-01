@@ -3,8 +3,7 @@ pragma solidity ^0.8.27;
 
 import "./bases/Base.t.sol";
 
-contract Updraft_Test is Base {    
-    
+contract Updraft_Test is Base {
     function testUpdraftApprovedToSpendUPD() public view {
         assertEq(_upd.allowance(owner, address(_updraft)), 10000000e18);
     }
@@ -21,14 +20,11 @@ contract Updraft_Test is Base {
         _updraft.updateProfile(profileBytesData);
     }
 
-    function testDeployIdea() public {   
+    function testDeployIdea() public {
         (Vm.Log[] memory logs, Idea _thisIdea, bytes memory ideaBytesData) = _createIdea();
 
-        ( 
-            uint256 contributionFee,
-            uint256 contribution,
-            bytes memory data
-        ) = abi.decode(logs[0].data, (uint256, uint256, bytes));
+        (uint256 contributionFee, uint256 contribution, bytes memory data) =
+            abi.decode(logs[0].data, (uint256, uint256, bytes));
 
         assertEq(contributionFee, CONTRIBUTION_FEE);
         assertEq(contribution, CONTRIBUTION);
@@ -39,14 +35,15 @@ contract Updraft_Test is Base {
     }
 
     function testCallerPositionEqualContributionMinusAntiSpam() public {
-        (, Idea _thisIdea, ) = _createIdea();
-        (uint256 tokens, ) = _thisIdea.checkPosition(owner);
+        (, Idea _thisIdea,) = _createIdea();
+        (uint256 tokens,) = _thisIdea.checkPosition(owner);
         assertEq(tokens, CONTRIBUTION - ANTI_SPAM_FEE);
-    }       
+    }
 
     function testDeploySolution() public {
-        (, Idea _thisIdea, ) = _createIdea();
-        (Vm.Log[] memory logs, Solution _thisSolution, bytes memory solutionBytesData) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (Vm.Log[] memory logs, Solution _thisSolution, bytes memory solutionBytesData) =
+            _createSolution(address(_thisIdea));
 
         (
             address fundingToken,
@@ -67,8 +64,9 @@ contract Updraft_Test is Base {
 
     // Creating a Solution to the Idea with a positive stake
     function testResultsInPositiveStakeForCaller() public {
-        (, Idea _thisIdea, ) = _createIdea();
-        (Vm.Log[] memory logs, Solution _thisSolution, bytes memory solutionBytesData) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (Vm.Log[] memory logs, Solution _thisSolution, bytes memory solutionBytesData) =
+            _createSolution(address(_thisIdea));
 
         uint256 ownerStake = _thisSolution.stakes(owner);
 

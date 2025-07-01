@@ -4,10 +4,9 @@ pragma solidity ^0.8.27;
 import "./bases/Position_Base.t.sol";
 
 contract Position_Split_Security_Test is Position_Base {
-
     // forge test --mt testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions -vv
     function testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
 
         _upd.approve(address(_thisIdea), TRANSFER_AMT);
 
@@ -43,9 +42,9 @@ contract Position_Split_Security_Test is Position_Base {
         assertEq(finalPositionCount, initialPositionCount + 2);
 
         // Get all positions' token amounts
-        (uint256 position0Tokens, ) = _thisIdea.checkPosition(owner, 0);
-        (uint256 position1Tokens, ) = _thisIdea.checkPosition(owner, 1);
-        (uint256 position2Tokens, ) = _thisIdea.checkPosition(owner, 2);
+        (uint256 position0Tokens,) = _thisIdea.checkPosition(owner, 0);
+        (uint256 position1Tokens,) = _thisIdea.checkPosition(owner, 1);
+        (uint256 position2Tokens,) = _thisIdea.checkPosition(owner, 2);
 
         console2.log("Position 0 tokens after split: %d", position0Tokens);
         console2.log("Position 1 tokens: %d", position1Tokens);
@@ -87,7 +86,7 @@ contract Position_Split_Security_Test is Position_Base {
 
     // forge test --mt testIdeaDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes -vv
     function testIdeaDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
 
         // Get initial position details
         (uint256 initialPositionTokens, uint256 initialPositionShares) = _thisIdea.checkPosition(owner, 0);
@@ -123,7 +122,7 @@ contract Position_Split_Security_Test is Position_Base {
 
         // Sum up all positions' tokens
         for (uint256 i = 0; i < positions; i++) {
-            (uint256 positionTokens, ) = _thisIdea.checkPosition(owner, i);
+            (uint256 positionTokens,) = _thisIdea.checkPosition(owner, i);
             console2.log("Position %d tokens: %d", i, positionTokens);
             totalPositionTokens += positionTokens;
         }
@@ -138,7 +137,7 @@ contract Position_Split_Security_Test is Position_Base {
 
         // Sum up all positions' tokens
         for (uint256 i = 0; i < positions; i++) {
-            (uint256 positionTokens, ) = _thisIdea.checkPosition(owner, i);
+            (uint256 positionTokens,) = _thisIdea.checkPosition(owner, i);
             console2.log("Position %d tokens: %d", i, positionTokens);
             detailedTotalTokens += positionTokens;
         }
@@ -186,7 +185,7 @@ contract Position_Split_Security_Test is Position_Base {
         console2.log("Initial position shares: %d", initialPositionShares);
 
         // Get the position's contribution amount
-        (uint256 initialContribution, , , , ) = _thisSolution.positionsByAddress(owner, 0);
+        (uint256 initialContribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
 
         console2.log("Initial contribution: %d", initialContribution);
 
@@ -218,9 +217,9 @@ contract Position_Split_Security_Test is Position_Base {
         assertEq(finalTokensContributed, initialTokensContributed);
 
         // Get all positions' contribution amounts
-        (uint256 position0Contribution, , , ,) = _thisSolution.positionsByAddress(owner, 0);
-        (uint256 position1Contribution, , , ,) = _thisSolution.positionsByAddress(owner, 1);
-        (uint256 position2Contribution, , , ,) = _thisSolution.positionsByAddress(owner, 2);
+        (uint256 position0Contribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
+        (uint256 position1Contribution,,,,) = _thisSolution.positionsByAddress(owner, 1);
+        (uint256 position2Contribution,,,,) = _thisSolution.positionsByAddress(owner, 2);
 
         console2.log("Position 0 contribution after split: %d", position0Contribution);
         console2.log("Position 1 contribution: %d", position1Contribution);
@@ -248,7 +247,9 @@ contract Position_Split_Security_Test is Position_Base {
         // Verify the total collected equals the initial position fees
         // Allow for a small rounding error (up to 3 wei) due to multiple divisions
         uint256 maxAllowedDifference = 3;
-        uint256 difference = (totalCollected > initialPositionFees) ? totalCollected - initialPositionFees : initialPositionFees - totalCollected;
+        uint256 difference = (totalCollected > initialPositionFees)
+            ? totalCollected - initialPositionFees
+            : initialPositionFees - totalCollected;
 
         console2.log("Difference between collected fees and initial fees: %d", difference);
         console2.log("Maximum allowed difference: %d wei", maxAllowedDifference);
@@ -256,7 +257,9 @@ contract Position_Split_Security_Test is Position_Base {
         assertLe(difference, maxAllowedDifference);
 
         if (difference > 0) {
-          console2.log("Note: There was a difference of %d wei, which is acceptable due to division rounding", difference);
+            console2.log(
+                "Note: There was a difference of %d wei, which is acceptable due to division rounding", difference
+            );
         }
     }
 
@@ -301,7 +304,7 @@ contract Position_Split_Security_Test is Position_Base {
         console2.log("Initial position shares: %d", initialPositionShares);
 
         // Get the position's contribution amount
-        (uint256 initialContribution, , , , ) = _thisSolution.positionsByAddress(owner, 0);
+        (uint256 initialContribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
 
         console2.log("Initial contribution: %d", initialContribution);
 
@@ -339,7 +342,7 @@ contract Position_Split_Security_Test is Position_Base {
         // Sum up all positions' contributions
         uint256 totalPositionContributions = 0;
         for (uint256 i = 0; i < positions; i++) {
-            (uint256 positionContribution, , , ,) = _thisSolution.positionsByAddress(owner, i);
+            (uint256 positionContribution,,,,) = _thisSolution.positionsByAddress(owner, i);
             console2.log("Position %d contribution: %d", i, positionContribution);
             totalPositionContributions += positionContribution;
         }
@@ -364,7 +367,9 @@ contract Position_Split_Security_Test is Position_Base {
         // Verify the total collected equals the initial position fees
         // We should expect exact equality or at most a difference of 1 wei due to division rounding
         uint256 maxAllowedDifference = 1;
-        uint256 difference = (totalCollected > initialPositionFees) ? totalCollected - initialPositionFees : initialPositionFees - totalCollected;
+        uint256 difference = (totalCollected > initialPositionFees)
+            ? totalCollected - initialPositionFees
+            : initialPositionFees - totalCollected;
 
         console2.log("Difference between collected fees and initial fees: %d", difference);
         console2.log("Maximum allowed difference: %d wei", maxAllowedDifference);
@@ -372,14 +377,16 @@ contract Position_Split_Security_Test is Position_Base {
         assertLe(difference, maxAllowedDifference);
 
         if (difference > 0) {
-            console2.log("Note: There was a difference of %d wei, which is acceptable due to division rounding", difference);
+            console2.log(
+                "Note: There was a difference of %d wei, which is acceptable due to division rounding", difference
+            );
         }
     }
 
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
-        (, Idea _thisIdea, ) = _createIdea();
-        (, Solution _thisSolution, ) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
 
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
 

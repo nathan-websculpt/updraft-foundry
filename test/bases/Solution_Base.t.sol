@@ -11,7 +11,6 @@ import {BaseHelpers} from "../lib/BaseHelpers.sol";
 import {Utils} from "../lib/Utils.sol";
 
 abstract contract Solution_Base is Test, Utils, BaseHelpers {
-    
     Updraft _updraft;
     UPDToken _upd;
 
@@ -44,15 +43,8 @@ abstract contract Solution_Base is Test, Utils, BaseHelpers {
         james = address(3);
         kirk = address(4);
         _upd = new UPDToken();
-        
-        _updraft = new Updraft(
-            _upd,
-            ANTI_SPAM_FEE,
-            PERCENT_FEE,
-            CYCLE_LENGTH,
-            ACCRUAL_RATE,
-            faucet
-        );
+
+        _updraft = new Updraft(_upd, ANTI_SPAM_FEE, PERCENT_FEE, CYCLE_LENGTH, ACCRUAL_RATE, faucet);
 
         // approve updraft to spend UDP
         _upd.approve(address(_updraft), 10000000e18);
@@ -67,6 +59,15 @@ abstract contract Solution_Base is Test, Utils, BaseHelpers {
     }
 
     function _createSolution(address _ideaAddr) internal returns (Vm.Log[] memory, Solution, bytes memory) {
-        return BaseHelpers.createSolution(_updraft, _upd,_ideaAddr, SOLUTION_STAKE, SOLUTION_GOAL, SOLUTION_DEADLINE, CONTRIBUTION_FEE, _makeSolutionData());
+        return BaseHelpers.createSolution(
+            _updraft,
+            _upd,
+            _ideaAddr,
+            SOLUTION_STAKE,
+            SOLUTION_GOAL,
+            SOLUTION_DEADLINE,
+            CONTRIBUTION_FEE,
+            _makeSolutionData()
+        );
     }
 }

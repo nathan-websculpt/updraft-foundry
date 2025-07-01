@@ -9,14 +9,12 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 abstract contract BaseHelpers {
     // instead of having to pass vm as a parameter
-    Vm constant _vm = Vm(address(uint160(uint256(keccak256('hevm cheat code')))));
+    Vm constant _vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
-    function createIdea(
-        Updraft _updraft,
-        uint256 contributionFee,
-        uint256 contribution,
-        bytes memory ideaData
-    ) internal returns (Vm.Log[] memory, Idea, bytes memory) {
+    function createIdea(Updraft _updraft, uint256 contributionFee, uint256 contribution, bytes memory ideaData)
+        internal
+        returns (Vm.Log[] memory, Idea, bytes memory)
+    {
         _vm.recordLogs();
         _updraft.createIdea(contributionFee, contribution, ideaData);
         Vm.Log[] memory logs = _vm.getRecordedLogs();
@@ -26,7 +24,7 @@ abstract contract BaseHelpers {
 
     function createSolution(
         Updraft _updraft,
-        IERC20 _upd,        
+        IERC20 _upd,
         address ideaAddr,
         uint256 stake,
         uint256 goal,

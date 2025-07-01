@@ -4,7 +4,6 @@ pragma solidity ^0.8.27;
 import "./bases/Solution_Base.t.sol";
 
 contract Solution_Critical_Bugs_Test is Solution_Base {
-    
     // Division by Zero Vulnerabilities
     function testHandlesTotalSharesWhenNoCyclesExist() public {
         Solution _thisSolution = _setup(); // makes an idea, a solution, and approves UPD spending on solution for owner, alice, and bob
@@ -13,7 +12,7 @@ contract Solution_Critical_Bugs_Test is Solution_Base {
     }
 
     function testHandlesRefundWhenTotalSharesIsZero() public {
-        Solution _thisSolution = _setup(); 
+        Solution _thisSolution = _setup();
         vm.startPrank(alice);
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
         uint256 secondContribution = 20e18;
@@ -33,7 +32,7 @@ contract Solution_Critical_Bugs_Test is Solution_Base {
 
     // should handle fee collection when cycle.shares is zero
     function testHandlesFeeCollectionWhenCycleSharesIsZero() public {
-        Solution _thisSolution = _setup(); 
+        Solution _thisSolution = _setup();
         vm.startPrank(alice);
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
         uint256 secondContribution = 20e18;
@@ -52,8 +51,8 @@ contract Solution_Critical_Bugs_Test is Solution_Base {
 
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
-        (, Idea _thisIdea, ) = _createIdea();
-        (, Solution _thisSolution, ) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
 
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
 

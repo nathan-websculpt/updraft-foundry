@@ -14,7 +14,6 @@ import {Utils} from "../lib/Utils.sol";
 // not DRY, similar to Solution_Base_Test
 // leaving these base tests alone to allow for more tests and flexibility later
 abstract contract Position_Base is Test, Utils, BaseHelpers {
-    
     Updraft _updraft;
     UPDToken _upd;
 
@@ -44,15 +43,8 @@ abstract contract Position_Base is Test, Utils, BaseHelpers {
         owner = address(this);
         alice = address(1);
         _upd = new UPDToken();
-        
-        _updraft = new Updraft(
-            _upd,
-            ANTI_SPAM_FEE,
-            PERCENT_FEE,
-            CYCLE_LENGTH,
-            ACCRUAL_RATE,
-            faucet
-        );
+
+        _updraft = new Updraft(_upd, ANTI_SPAM_FEE, PERCENT_FEE, CYCLE_LENGTH, ACCRUAL_RATE, faucet);
 
         // approve updraft to spend UDP
         _upd.approve(address(_updraft), 10000000e18);
@@ -66,6 +58,15 @@ abstract contract Position_Base is Test, Utils, BaseHelpers {
     }
 
     function _createSolution(address _ideaAddr) internal returns (Vm.Log[] memory, Solution, bytes memory) {
-        return BaseHelpers.createSolution(_updraft, _upd,_ideaAddr, SOLUTION_STAKE, SOLUTION_GOAL, SOLUTION_DEADLINE, CONTRIBUTION_FEE, _makeSolutionData());
+        return BaseHelpers.createSolution(
+            _updraft,
+            _upd,
+            _ideaAddr,
+            SOLUTION_STAKE,
+            SOLUTION_GOAL,
+            SOLUTION_DEADLINE,
+            CONTRIBUTION_FEE,
+            _makeSolutionData()
+        );
     }
 }

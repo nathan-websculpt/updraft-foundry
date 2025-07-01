@@ -6,7 +6,6 @@ import "./bases/Idea_Fee_Distribution_Base.t.sol";
 // forge test --mt testFeeDistribution -vv
 
 contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
-    
     Idea _thisIdea;
     IERC20 token;
 
@@ -35,7 +34,7 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         token = _thisIdea.token();
         assertEq(address(token), address(_upd));
 
-        console2.log('\n--- Creating test scenario ---');
+        console2.log("\n--- Creating test scenario ---");
 
         _logContractState("Initial state");
 
@@ -70,7 +69,8 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         _thisIdea.contribute(firstContributionSecondCycle);
         console2.log("\nFirst wallet contributed in second cycle");
         uint256 firstContributionSecondCycleAfterFee = firstContributionSecondCycle - ANTI_SPAM_FEE;
-        uint256 firstContributionSecondCycleContributorFee = firstContributionSecondCycleAfterFee * contributorFee / percentScale;
+        uint256 firstContributionSecondCycleContributorFee =
+            firstContributionSecondCycleAfterFee * contributorFee / percentScale;
         _logContractState("After first wallet contribution in second cycle");
 
         // Second wallet contributes in the second cycle
@@ -79,7 +79,8 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         _thisIdea.contribute(secondContributionSecondCycle);
         console2.log("\nSecond wallet contributed in second cycle");
         uint256 secondContributionSecondCycleAfterFee = secondContributionSecondCycle - ANTI_SPAM_FEE;
-        uint256 secondContributionSecondCycleContributorFee = secondContributionSecondCycleAfterFee * contributorFee / percentScale;
+        uint256 secondContributionSecondCycleContributorFee =
+            secondContributionSecondCycleAfterFee * contributorFee / percentScale;
         _logContractState("After second wallet contribution in second cycle");
 
         // advance time to the third cycle
@@ -93,7 +94,8 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         _thisIdea.contribute(thirdContributionThirdCycle);
         console2.log("\nThird wallet contributed in third cycle");
         uint256 thirdContributionThirdCycleAfterFee = thirdContributionThirdCycle - ANTI_SPAM_FEE;
-        uint256 thirdContributionThirdCycleContributorFee = thirdContributionThirdCycleAfterFee * contributorFee / percentScale;
+        uint256 thirdContributionThirdCycleContributorFee =
+            thirdContributionThirdCycleAfterFee * contributorFee / percentScale;
         _logContractState("After third wallet contribution in third cycle");
 
         // Advance time to the fourth cycle to ensure all fees are distributed
@@ -109,9 +111,12 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         _logContractState("After final contribution");
 
         // Calculate total contributions and expected contributor fees
-        uint256 totalContributions = firstContribution + secondContribution + thirdContribution + firstContributionSecondCycle + secondContributionSecondCycle + thirdContributionThirdCycle + finalContribution;
+        uint256 totalContributions = firstContribution + secondContribution + thirdContribution
+            + firstContributionSecondCycle + secondContributionSecondCycle + thirdContributionThirdCycle + finalContribution;
         uint256 totalAntiSpamFees = ANTI_SPAM_FEE * 7; // 7 contributions
-        uint256 totalContributorFees = firstContributionSecondCycleContributorFee + secondContributionSecondCycleContributorFee + thirdContributionThirdCycleContributorFee + finalContributionContributorFee;
+        uint256 totalContributorFees = firstContributionSecondCycleContributorFee
+            + secondContributionSecondCycleContributorFee + thirdContributionThirdCycleContributorFee
+            + finalContributionContributorFee;
         uint256 expectedNetContributions = totalContributions - totalAntiSpamFees;
 
         console2.log("\n--- Contribution Summary ---");
@@ -180,14 +185,15 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         console2.log("Total withdrawn by third wallet: %d", thirdWalletWithdrawn);
 
         // Calculate the total contributions by each wallet (minus anti-spam fees)
-        uint256 firstWalletContributions = firstContributionAfterFee + firstContributionSecondCycleAfterFee + finalContributionAfterFee;
+        uint256 firstWalletContributions =
+            firstContributionAfterFee + firstContributionSecondCycleAfterFee + finalContributionAfterFee;
         uint256 secondWalletContributions = secondContributionAfterFee + secondContributionSecondCycleAfterFee;
         uint256 thirdWalletContributions = thirdContributionAfterFee + thirdContributionThirdCycleAfterFee;
 
         console2.log("\nFirst wallet contributions: ", firstWalletContributions);
         console2.log("First wallet withdrawals: ", firstWalletWithdrawn);
         int256 firstWalletProfit = int256(firstWalletWithdrawn) - int256(firstWalletContributions);
-        console2.log("First wallet profit: ", firstWalletProfit); 
+        console2.log("First wallet profit: ", firstWalletProfit);
 
         console2.log("\nSecond wallet contributions: ", secondWalletContributions);
         console2.log("Second wallet withdrawals: ", secondWalletWithdrawn);
@@ -251,8 +257,8 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         uint256 slot = 2;
         uint256 cyclesArrayLength = uint256(vm.load(address(_thisIdea), bytes32(slot)));
 
-        if(cyclesArrayLength > 0) {
-            for(uint256 i = 0; i < cyclesArrayLength; i++) {
+        if (cyclesArrayLength > 0) {
+            for (uint256 i = 0; i < cyclesArrayLength; i++) {
                 (uint256 number, uint256 shares, uint256 fees, bool hasContributions) = _thisIdea.cycles(i);
                 console2.log("Cycle %d: hasContributions=%s", i, hasContributions);
                 console2.log("\t   number=%d, shares=%d, fees=%d", number, shares, fees);
@@ -260,4 +266,3 @@ contract Idea_Fee_Distribution_Test is Idea_Fee_Distribution_Base {
         }
     }
 }
-

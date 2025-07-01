@@ -34,21 +34,14 @@ abstract contract Base is Test, Utils, BaseHelpers {
 
     uint256 constant TRANSFER_AMT = 100e18;
     uint256 constant CONTRIBUTION_AMT = 20e18;
-    
+
     function setUp() public {
         owner = address(this);
         alice = address(1);
         bob = address(2);
         _upd = new UPDToken();
-        
-        _updraft = new Updraft(
-            _upd,
-            MIN_FEE,
-            PERCENT_FEE,
-            CYCLE_LENGTH,
-            ACCRUAL_RATE,
-            faucet
-        );
+
+        _updraft = new Updraft(_upd, MIN_FEE, PERCENT_FEE, CYCLE_LENGTH, ACCRUAL_RATE, faucet);
 
         // approve updraft to spend UDP
         _upd.approve(address(_updraft), 10000000e18);
@@ -63,6 +56,15 @@ abstract contract Base is Test, Utils, BaseHelpers {
     }
 
     function _createSolution(address _ideaAddr) internal returns (Vm.Log[] memory, Solution, bytes memory) {
-        return BaseHelpers.createSolution(_updraft, _upd,_ideaAddr, SOLUTION_STAKE, SOLUTION_GOAL, SOLUTION_DEADLINE, CONTRIBUTION_FEE, _makeSolutionData());
+        return BaseHelpers.createSolution(
+            _updraft,
+            _upd,
+            _ideaAddr,
+            SOLUTION_STAKE,
+            SOLUTION_GOAL,
+            SOLUTION_DEADLINE,
+            CONTRIBUTION_FEE,
+            _makeSolutionData()
+        );
     }
 }

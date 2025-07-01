@@ -7,7 +7,7 @@ contract Position_Self_Transfer_Test is Position_Base {
     // Idea contract should delete the original position and create a new one when transferring to yourself without gaining extra tokens
     // forge test --mt testIdeaDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens -vv
     function testIdeaDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens() public {
-        (, Idea _thisIdea, ) = _createIdea();
+        (, Idea _thisIdea,) = _createIdea();
 
         // Get initial position details
         uint256 initialPositionCount = _thisIdea.numPositions(owner);
@@ -46,7 +46,7 @@ contract Position_Self_Transfer_Test is Position_Base {
     // forge test --mt testSolutionDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens -vv
     function testSolutionDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens() public {
         Solution _thisSolution = _setup();
-        
+
         // Create a position by contributing
         _thisSolution.contribute(CONTRIBUTION_AMT);
 
@@ -82,7 +82,8 @@ contract Position_Self_Transfer_Test is Position_Base {
         console2.log("Initial position shares: %d", initialPositionShares);
 
         // Get the position's contribution amount and other details
-        (uint256 initialContribution, , uint256 initialStartCycleIndex, uint256 initialLastCollectedCycleIndex, ) = _thisSolution.positionsByAddress(owner, 0);
+        (uint256 initialContribution,, uint256 initialStartCycleIndex, uint256 initialLastCollectedCycleIndex,) =
+            _thisSolution.positionsByAddress(owner, 0);
 
         console2.log("Initial contribution: %d", initialContribution);
         console2.log("Initial startCycleIndex: %d", initialStartCycleIndex);
@@ -105,12 +106,13 @@ contract Position_Self_Transfer_Test is Position_Base {
         assertEq(finalPositionCount, initialPositionCount + 1);
 
         // Verify original position is empty (deleted)
-        (uint256 emptyContribution, , , , ) = _thisSolution.positionsByAddress(owner, 0);
+        (uint256 emptyContribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
         assertEq(emptyContribution, 0);
 
         // Verify new position has the same properties as the original
         uint256 newPositionIndex = finalPositionCount - 1;
-        (uint256 newContribution, , uint256 newStartCycleIndex, uint256 newLastCollectedCycleIndex, ) = _thisSolution.positionsByAddress(owner, newPositionIndex);
+        (uint256 newContribution,, uint256 newStartCycleIndex, uint256 newLastCollectedCycleIndex,) =
+            _thisSolution.positionsByAddress(owner, newPositionIndex);
         (uint256 newPositionFees, uint256 newPositionShares) = _thisSolution.checkPosition(owner, newPositionIndex);
 
         console2.log("New position fees earned: %d", newPositionFees);
@@ -143,8 +145,8 @@ contract Position_Self_Transfer_Test is Position_Base {
 
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
-        (, Idea _thisIdea, ) = _createIdea();
-        (, Solution _thisSolution, ) = _createSolution(address(_thisIdea));
+        (, Idea _thisIdea,) = _createIdea();
+        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
 
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
 

@@ -9,7 +9,6 @@ import {UPDToken} from "../../src/UPDToken.sol";
 import {Utils} from "../lib/Utils.sol";
 
 abstract contract Idea_Fee_Distribution_Base is Test, Utils {
-    
     Updraft _updraft;
     UPDToken _upd;
 
@@ -38,15 +37,8 @@ abstract contract Idea_Fee_Distribution_Base is Test, Utils {
         james = address(3);
         kirk = address(4);
         _upd = new UPDToken();
-        
-        _updraft = new Updraft(
-            _upd,
-            ANTI_SPAM_FEE,
-            PERCENT_FEE,
-            CYCLE_LENGTH,
-            ACCRUAL_RATE,
-            faucet
-        );
+
+        _updraft = new Updraft(_upd, ANTI_SPAM_FEE, PERCENT_FEE, CYCLE_LENGTH, ACCRUAL_RATE, faucet);
 
         // approve updraft to spend UDP
         _upd.approve(address(_updraft), 1000e18);
