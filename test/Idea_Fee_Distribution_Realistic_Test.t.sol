@@ -266,27 +266,24 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base {
         uint256 contributorFeesChange = contributorFeesBefore - contributorFeesAfter;
 
         // Find the position in our tracking 
-        // TODO: refactor
-        for(uint256 i; i < positions.length; i++) {
-            Position memory position = positions[i];
-            if(keccak256(abi.encodePacked(position.wallet)) == keccak256(abi.encodePacked(walletName)) && positions[i].positionIndex == positionIndex) {
-                positions[i].actualWithdrawn = withdrawn; // set on storage
+        Position memory position = _findPosition(walletName, positionIndex);
+        
+        position.actualWithdrawn = withdrawn; // set on storage
 
-                // Calculate the original contribution amount (after anti-spam fee but before contributor fee)
-                uint256 originalContribution = position.contributionAfterFee - position.contributorFeePaid;
+        // Calculate the original contribution amount (after anti-spam fee but before contributor fee)
+        uint256 originalContribution = position.contributionAfterFee - position.contributorFeePaid;
 
-                // Calculate fees earned
-                int256 feesEarned = int256(withdrawn) - int256(originalContribution);
+        // Calculate fees earned
+        int256 feesEarned = int256(withdrawn) - int256(originalContribution);
 
-                console2.log("Successfully withdrew %s wallet position %d:", walletName, positionIndex);
-                console2.log("  Withdrawn amount: %s UPD", _formatUnits(withdrawn));
-                console2.log("  Original contribution: %s UPD", _formatUnits(originalContribution));
-                console2.log("  Fees earned: %s UPD", feesEarned);
-                console2.log("  Contributor fees change: %s UPD", _formatUnits(contributorFeesChange));
-                console2.log("  Contributor fees remaining: %s UPD", _formatUnits(contributorFeesAfter));
-                return withdrawn;
-            }
-        }        
+        console2.log("Successfully withdrew %s wallet position %d:", walletName, positionIndex);
+        console2.log("  Withdrawn amount: %s UPD", _formatUnits(withdrawn));
+        console2.log("  Original contribution: %s UPD", _formatUnits(originalContribution));
+        console2.log("  Fees earned: %s UPD", feesEarned);
+        console2.log("  Contributor fees change: %s UPD", _formatUnits(contributorFeesChange));
+        console2.log("  Contributor fees remaining: %s UPD", _formatUnits(contributorFeesAfter));
+
+        return withdrawn;      
     }
 
     // Helper function to check position details before withdrawal
@@ -300,45 +297,53 @@ contract Idea_Fee_Distribution_Realistic_Test is Idea_Fee_Distribution_Base {
         uint256 contributorFees = _thisIdea.contributorFees();
 
         // find position
+        Position memory position = _findPosition(walletName, positionIndex);
+
+        // Calculate the original contribution amount (after anti-spam fee but before contributor fee)
+        uint256 originalContribution = position.contributionAfterFee - position.contributorFeePaid;
+
+        // Get the original position tokens from the contract
+        (,uint256 originalPositionTokens) = _thisIdea.positionsByAddress(walletAddress, positionIndex);
+
+        // Calculate fees that would be earned in this withdrawal
+        uint256 feesToBeEarned = positionTokens - originalPositionTokens;
+
+        console2.log("Position check for %s wallet position %d:", walletName, positionIndex);
+        console2.log("  Original contribution: %s UPD", _formatUnits(originalContribution));
+        console2.log("  Position details from contract:");
+        console2.log("    Tokens from checkPosition: %s UPD", _formatUnits(positionTokens));
+        console2.log("    Original position tokens: %s UPD", _formatUnits(originalPositionTokens));
+        console2.log("    Fees to be earned: %s UPD", _formatUnits(feesToBeEarned));
+        console2.log("    Shares: %s shares", _formatUnits(shares));
+        console2.log("  Contract state:");
+        console2.log("    Contract balance: %s UPD", _formatUnits(contractBalance));
+        console2.log("    Contract tokens: %s UPD", _formatUnits(contractTokens));
+        console2.log("    Contributor fees: %s UPD", _formatUnits(contributorFees));
+
+        // Check if position is trying to withdraw more than what's left
+        if (positionTokens > contractBalance) {
+            console2.log("  WARNING: Position is trying to withdraw %s UPD, but contract only has %s UPD", _formatUnits(positionTokens), _formatUnits(contractBalance));
+            console2.log("  Difference: %s UPD", _formatUnits(positionTokens - contractBalance));
+        }
+
+        // Check if position is trying to withdraw more fees than available
+        if (feesToBeEarned > contributorFees) {
+            console2.log("  WARNING: Position is trying to withdraw %s UPD in fees, but contract only has %s UPD in contributorFees", _formatUnits(feesToBeEarned), _formatUnits(contributorFees));
+            console2.log("  Difference: %s UPD", _formatUnits(feesToBeEarned - contributorFees));
+            console2.log("  This will likely cause an underflow in the contributorFees subtraction!");
+        }
+
+        return (positionTokens, shares);
+    }
+
+    function _findPosition(string memory walletName, uint256 positionIndex) private returns(Position memory) {
         for(uint256 i; i < positions.length; i++) {
             Position memory position = positions[i];
             if(keccak256(abi.encodePacked(position.wallet)) == keccak256(abi.encodePacked(walletName)) && positions[i].positionIndex == positionIndex) {
-                // Calculate the original contribution amount (after anti-spam fee but before contributor fee)
-                uint256 originalContribution = position.contributionAfterFee - position.contributorFeePaid;
-
-                // Get the original position tokens from the contract
-                (,uint256 originalPositionTokens) = _thisIdea.positionsByAddress(walletAddress, positionIndex);
-
-                // Calculate fees that would be earned in this withdrawal
-                uint256 feesToBeEarned = positionTokens - originalPositionTokens;
-
-                console2.log("Position check for %s wallet position %d:", walletName, positionIndex);
-                console2.log("  Original contribution: %s UPD", _formatUnits(originalContribution));
-                console2.log("  Position details from contract:");
-                console2.log("    Tokens from checkPosition: %s UPD", _formatUnits(positionTokens));
-                console2.log("    Original position tokens: %s UPD", _formatUnits(originalPositionTokens));
-                console2.log("    Fees to be earned: %s UPD", _formatUnits(feesToBeEarned));
-                console2.log("    Shares: %s shares", _formatUnits(shares));
-                console2.log("  Contract state:");
-                console2.log("    Contract balance: %s UPD", _formatUnits(contractBalance));
-                console2.log("    Contract tokens: %s UPD", _formatUnits(contractTokens));
-                console2.log("    Contributor fees: %s UPD", _formatUnits(contributorFees));
-
-                // Check if position is trying to withdraw more than what's left
-                if (positionTokens > contractBalance) {
-                    console2.log("  WARNING: Position is trying to withdraw %s UPD, but contract only has %s UPD", _formatUnits(positionTokens), _formatUnits(contractBalance));
-                    console2.log("  Difference: %s UPD", _formatUnits(positionTokens - contractBalance));
-                }
-
-                // Check if position is trying to withdraw more fees than available
-                if (feesToBeEarned > contributorFees) {
-                    console2.log("  WARNING: Position is trying to withdraw %s UPD in fees, but contract only has %s UPD in contributorFees", _formatUnits(feesToBeEarned), _formatUnits(contributorFees));
-                    console2.log("  Difference: %s UPD", _formatUnits(feesToBeEarned - contributorFees));
-                    console2.log("  This will likely cause an underflow in the contributorFees subtraction!");
-                }
-                return (positionTokens, shares);
+                return position;
             }
         }
+        revert("Failed to find position in function: _findPosition");
     }
 
     function _getThisWallet(uint256 walletIndex) private returns(address) {
