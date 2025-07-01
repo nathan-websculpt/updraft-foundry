@@ -7,9 +7,10 @@ import {Updraft} from "../../src/Updraft.sol";
 import {Idea} from "../../src/Idea.sol";
 import {Solution} from "../../src/Solution.sol";
 import {UPDToken} from "../../src/UPDToken.sol";
+import {BaseHelpers} from "../lib/BaseHelpers.sol";
 import {Utils} from "../lib/Utils.sol";
 
-abstract contract Base is Test, Utils {
+abstract contract Base is Test, Utils, BaseHelpers {
     Updraft _updraft;
     UPDToken _upd;
 
@@ -58,24 +59,10 @@ abstract contract Base is Test, Utils {
     }
 
     function _createIdea() internal returns (Vm.Log[] memory, Idea, bytes memory) {
-        bytes memory ideaBytesData = _makeIdeaData();
-        vm.recordLogs();
-
-        _updraft.createIdea(CONTRIBUTION_FEE, CONTRIBUTION, ideaBytesData);
-
-        Vm.Log[] memory logs = vm.getRecordedLogs();
-        address ideaAddr = address(uint160(uint256(logs[0].topics[1])));
-        return (logs, Idea(ideaAddr), ideaBytesData);
+        return BaseHelpers.createIdea(_updraft, CONTRIBUTION_FEE, CONTRIBUTION, _makeIdeaData());
     }
 
     function _createSolution(address _ideaAddr) internal returns (Vm.Log[] memory, Solution, bytes memory) {
-        bytes memory solutionBytesData = _makeSolutionData();
-        vm.recordLogs();
-
-        _updraft.createSolution(_ideaAddr, _upd, SOLUTION_STAKE, SOLUTION_GOAL, SOLUTION_DEADLINE, CONTRIBUTION_FEE, solutionBytesData);
-
-        Vm.Log[] memory logs = vm.getRecordedLogs();
-        address solutionAddr = address(uint160(uint256(logs[1].topics[1])));
-        return (logs, Solution(solutionAddr), solutionBytesData);
+        return BaseHelpers.createSolution(_updraft, _upd,_ideaAddr, SOLUTION_STAKE, SOLUTION_GOAL, SOLUTION_DEADLINE, CONTRIBUTION_FEE, _makeSolutionData());
     }
 }
