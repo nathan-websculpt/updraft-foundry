@@ -525,10 +525,10 @@ contract Solution_Test is Base {
 
     // PRIVATE HELPERS
     function _setup() private returns (Solution) {
-        (, Idea _thisIdea,) = _createIdea();
-        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
+        (Idea _thisIdea, ,) = _createIdea();
+        (Solution _thisSolution, ,) = _createSolution(address(_thisIdea));
 
-        _upd.approve(address(_thisSolution), 100000000000e18);
+        _upd.approve(address(_thisSolution), TRANSFER_AMT);
 
         vm.prank(alice);
         _upd.approve(address(_thisSolution), TRANSFER_AMT);

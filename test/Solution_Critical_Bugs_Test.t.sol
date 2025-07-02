@@ -42,19 +42,4 @@ contract Solution_Critical_Bugs_Test is Solution_Base {
         emit Solution.FeesCollected(alice, 0, 0);
         _thisSolution.collectFees(0);
     }
-
-    // PRIVATE HELPERS
-    function _setup() private returns (Solution) {
-        (, Idea _thisIdea,) = _createIdea();
-        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
-
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        vm.prank(alice);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-        vm.prank(bob);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        return _thisSolution;
-    }
 }

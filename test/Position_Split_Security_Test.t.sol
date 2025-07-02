@@ -6,7 +6,7 @@ import "./bases/Position_Base.t.sol";
 contract Position_Split_Security_Test is Position_Base {
     // forge test --mt testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions -vv
     function testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions() public {
-        (, Idea _thisIdea,) = _createIdea();
+        (Idea _thisIdea, ,) = _createIdea();
 
         _upd.approve(address(_thisIdea), TRANSFER_AMT);
 
@@ -86,7 +86,7 @@ contract Position_Split_Security_Test is Position_Base {
 
     // forge test --mt testIdeaDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes -vv
     function testIdeaDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes() public {
-        (, Idea _thisIdea,) = _createIdea();
+        (Idea _thisIdea, ,) = _createIdea();
 
         // Get initial position details
         (uint256 initialPositionTokens, uint256 initialPositionShares) = _thisIdea.checkPosition(owner, 0);
@@ -381,18 +381,5 @@ contract Position_Split_Security_Test is Position_Base {
                 "Note: There was a difference of %d wei, which is acceptable due to division rounding", difference
             );
         }
-    }
-
-    // PRIVATE HELPERS
-    function _setup() private returns (Solution) {
-        (, Idea _thisIdea,) = _createIdea();
-        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
-
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        vm.prank(alice);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        return _thisSolution;
     }
 }

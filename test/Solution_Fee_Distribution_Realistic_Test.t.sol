@@ -196,19 +196,4 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
         assertEq(secondBalanceAfterSecondCollection, secondBalanceAfter);
         assertEq(thirdBalanceAfterSecondCollection, thirdBalanceAfter);
     }
-
-    // PRIVATE HELPERS
-    function _setup() private returns (Solution) {
-        (, Idea _thisIdea,) = _createIdea();
-        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
-
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        vm.prank(alice);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-        vm.prank(bob);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        return _thisSolution;
-    }
 }

@@ -53,23 +53,6 @@ abstract contract Position_Base is Test, Utils, BaseHelpers {
         _upd.transfer(alice, TRANSFER_AMT);
     }
 
-    function _createIdea() internal returns (Vm.Log[] memory, Idea, bytes memory) {
-        return BaseHelpers.createIdea(_updraft, CONTRIBUTION_FEE, CONTRIBUTION, _makeIdeaData());
-    }
-
-    function _createSolution(address _ideaAddr) internal returns (Vm.Log[] memory, Solution, bytes memory) {
-        return BaseHelpers.createSolution(
-            _updraft,
-            _upd,
-            _ideaAddr,
-            SOLUTION_STAKE,
-            SOLUTION_GOAL,
-            SOLUTION_DEADLINE,
-            CONTRIBUTION_FEE,
-            _makeSolutionData()
-        );
-    }
-
     function _contributionAtAddress(address who, uint256 index, Solution _thisSolution)
         internal
         view
@@ -77,5 +60,30 @@ abstract contract Position_Base is Test, Utils, BaseHelpers {
     {
         (uint256 contribution,,,,) = _thisSolution.positionsByAddress(who, index);
         return contribution;
+    }
+
+    function _setup() internal returns (Solution) {
+        (Idea _thisIdea, ,) = _createIdea();
+        (Solution _thisSolution, ,) = BaseHelpers.createSolution(
+            _updraft,
+            _upd,
+            address(_thisIdea),
+            SOLUTION_STAKE,
+            SOLUTION_GOAL,
+            SOLUTION_DEADLINE,
+            CONTRIBUTION_FEE,
+            _makeSolutionData()
+        );
+
+        _upd.approve(address(_thisSolution), TRANSFER_AMT);
+
+        vm.prank(alice);
+        _upd.approve(address(_thisSolution), TRANSFER_AMT);
+
+        return _thisSolution;
+    }
+
+    function _createIdea() internal returns (Idea, Vm.Log[] memory, bytes memory) {
+        return BaseHelpers.createIdea(_updraft, CONTRIBUTION_FEE, CONTRIBUTION, _makeIdeaData());
     }
 }

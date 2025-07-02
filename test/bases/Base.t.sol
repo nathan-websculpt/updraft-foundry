@@ -51,11 +51,11 @@ abstract contract Base is Test, Utils, BaseHelpers {
         _upd.transfer(bob, TRANSFER_AMT);
     }
 
-    function _createIdea() internal returns (Vm.Log[] memory, Idea, bytes memory) {
+    function _createIdea() internal returns (Idea, Vm.Log[] memory, bytes memory) {
         return BaseHelpers.createIdea(_updraft, CONTRIBUTION_FEE, CONTRIBUTION, _makeIdeaData());
     }
 
-    function _createSolution(address _ideaAddr) internal returns (Vm.Log[] memory, Solution, bytes memory) {
+    function _createSolution(address _ideaAddr) internal returns (Solution, Vm.Log[] memory, bytes memory) {
         return BaseHelpers.createSolution(
             _updraft,
             _upd,

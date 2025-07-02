@@ -218,19 +218,4 @@ contract Solution_Zero_Balance_Test is Solution_Base {
             );
         }
     }
-
-    // PRIVATE HELPERS
-    function _setup() private returns (Solution) {
-        (, Idea _thisIdea,) = _createIdea();
-        (, Solution _thisSolution,) = _createSolution(address(_thisIdea));
-
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        vm.prank(alice);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-        vm.prank(bob);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        return _thisSolution;
-    }
 }

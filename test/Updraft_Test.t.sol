@@ -21,7 +21,7 @@ contract Updraft_Test is Base {
     }
 
     function testDeployIdea() public {
-        (Vm.Log[] memory logs, Idea _thisIdea, bytes memory ideaBytesData) = _createIdea();
+        (Idea _thisIdea, Vm.Log[] memory logs, bytes memory ideaBytesData) = _createIdea();
 
         (uint256 contributionFee, uint256 contribution, bytes memory data) =
             abi.decode(logs[0].data, (uint256, uint256, bytes));
@@ -35,14 +35,14 @@ contract Updraft_Test is Base {
     }
 
     function testCallerPositionEqualContributionMinusAntiSpam() public {
-        (, Idea _thisIdea,) = _createIdea();
+        (Idea _thisIdea, ,) = _createIdea();
         (uint256 tokens,) = _thisIdea.checkPosition(owner);
         assertEq(tokens, CONTRIBUTION - ANTI_SPAM_FEE);
     }
 
     function testDeploySolution() public {
-        (, Idea _thisIdea,) = _createIdea();
-        (Vm.Log[] memory logs, Solution _thisSolution, bytes memory solutionBytesData) =
+        (Idea _thisIdea, ,) = _createIdea();
+        (Solution _thisSolution, Vm.Log[] memory logs, bytes memory solutionBytesData) =
             _createSolution(address(_thisIdea));
 
         (
@@ -64,8 +64,8 @@ contract Updraft_Test is Base {
 
     // Creating a Solution to the Idea with a positive stake
     function testResultsInPositiveStakeForCaller() public {
-        (, Idea _thisIdea,) = _createIdea();
-        (Vm.Log[] memory logs, Solution _thisSolution, bytes memory solutionBytesData) =
+        (Idea _thisIdea, ,) = _createIdea();
+        (Solution _thisSolution, Vm.Log[] memory logs, bytes memory solutionBytesData) =
             _createSolution(address(_thisIdea));
 
         uint256 ownerStake = _thisSolution.stakes(owner);

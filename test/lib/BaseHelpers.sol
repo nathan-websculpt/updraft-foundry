@@ -13,13 +13,13 @@ abstract contract BaseHelpers {
 
     function createIdea(Updraft _updraft, uint256 contributionFee, uint256 contribution, bytes memory ideaData)
         internal
-        returns (Vm.Log[] memory, Idea, bytes memory)
+        returns (Idea, Vm.Log[] memory, bytes memory)
     {
         _vm.recordLogs();
         _updraft.createIdea(contributionFee, contribution, ideaData);
         Vm.Log[] memory logs = _vm.getRecordedLogs();
         address ideaAddr = address(uint160(uint256(logs[0].topics[1])));
-        return (logs, Idea(ideaAddr), ideaData);
+        return (Idea(ideaAddr), logs, ideaData);
     }
 
     function createSolution(
@@ -31,11 +31,11 @@ abstract contract BaseHelpers {
         uint256 deadline,
         uint256 contributionFee,
         bytes memory solutionData
-    ) internal returns (Vm.Log[] memory, Solution, bytes memory) {
+    ) internal returns (Solution, Vm.Log[] memory, bytes memory) {
         _vm.recordLogs();
         _updraft.createSolution(ideaAddr, _upd, stake, goal, deadline, contributionFee, solutionData);
         Vm.Log[] memory logs = _vm.getRecordedLogs();
         address solutionAddr = address(uint160(uint256(logs[1].topics[1])));
-        return (logs, Solution(solutionAddr), solutionData);
+        return (Solution(solutionAddr), logs, solutionData);
     }
 }
