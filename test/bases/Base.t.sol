@@ -51,6 +51,12 @@ abstract contract Base is Test, Utils, BaseHelpers {
         _upd.transfer(bob, TRANSFER_AMT);
     }
 
+    // TODO: refactor
+    function _skipPastDeadline(Solution _thisSolution) internal {
+        uint256 deadline = _thisSolution.deadline();
+        skip(deadline + 1);
+    }
+
     function _setupSolution() internal returns (Solution) {
         (Idea _thisIdea,,) = _createIdea();
         (Solution _thisSolution,,) = _createSolution(address(_thisIdea));
@@ -80,11 +86,5 @@ abstract contract Base is Test, Utils, BaseHelpers {
             CONTRIBUTION_FEE,
             _makeSolutionData()
         );
-    }
-
-    // TODO: refactor
-    function _skipPastDeadline(Solution _thisSolution) internal {
-        uint256 deadline = _thisSolution.deadline();
-        skip(deadline + 1);
     }
 }
