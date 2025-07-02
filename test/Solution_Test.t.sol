@@ -265,10 +265,7 @@ contract Solution_Test is Base {
         Solution _thisSolution = _setup();
 
         // Contribute enough to reach the goal
-        uint256 goal = _thisSolution.fundingGoal();
-        uint256 contribution = goal;
-        _upd.approve(address(_thisSolution), contribution);
-        _thisSolution.contribute(contribution);
+        _contributeFundingGoal(_thisSolution);
 
         // Get initial stake
         uint256 initialStake = _thisSolution.stakes(owner);
@@ -309,8 +306,7 @@ contract Solution_Test is Base {
         (uint256 positionTokens,) = _thisSolution.checkPosition(alice, 0);
 
         // advance time past the deadline
-        uint256 deadline = _thisSolution.deadline();
-        skip(deadline + 1);
+        _skipPastDeadline(_thisSolution);
 
         // Get balance before refund
         uint256 balanceBefore = _upd.balanceOf(alice);
@@ -343,8 +339,7 @@ contract Solution_Test is Base {
         _thisSolution.contribute(remainingGoal);
 
         // advance time past the deadline
-        uint256 deadline = _thisSolution.deadline();
-        skip(deadline + 1);
+        _skipPastDeadline(_thisSolution);
 
         vm.prank(alice);
         vm.expectRevert();
@@ -399,8 +394,7 @@ contract Solution_Test is Base {
         assertEq(newFundingGoal, newGoal);
 
         // Advance time past the deadline to make the goal fail
-        uint256 deadline = _thisSolution.deadline();
-        skip(deadline + 1);
+        _skipPastDeadline(_thisSolution);
 
         // verify that the goal has failed
         assertEq(_thisSolution.goalFailed(), true);
@@ -440,8 +434,7 @@ contract Solution_Test is Base {
         vm.stopPrank();
 
         // Advance time past the deadline to make the goal fail
-        uint256 deadline = _thisSolution.deadline();
-        skip(deadline + 1);
+        _skipPastDeadline(_thisSolution);
 
         // verify that the goal has failed
         assertEq(_thisSolution.goalFailed(), true);
@@ -482,20 +475,15 @@ contract Solution_Test is Base {
 
     function testShouldNotAllowWithdrawingMoreThanAvailable() public {
         Solution _thisSolution = _setup();
-        uint256 goal = _thisSolution.fundingGoal();
-        uint256 contribution = goal;
-        _upd.approve(address(_thisSolution), contribution);
-        _thisSolution.contribute(contribution);
+        uint256 contribution = _contributeFundingGoal(_thisSolution);
+
         vm.expectRevert();
         _thisSolution.withdrawFunds(owner, contribution + 1);
     }
 
     function testShouldNotAllowNonOwnersToWithdrawFunds() public {
         Solution _thisSolution = _setup();
-        uint256 goal = _thisSolution.fundingGoal();
-        uint256 contribution = goal;
-        _upd.approve(address(_thisSolution), contribution);
-        _thisSolution.contribute(contribution);
+        uint256 contribution = _contributeFundingGoal(_thisSolution);
 
         vm.prank(alice);
         vm.expectRevert();
@@ -548,5 +536,12 @@ contract Solution_Test is Base {
         _upd.approve(address(_thisSolution), TRANSFER_AMT);
 
         return _thisSolution;
+    }
+
+    function _contributeFundingGoal(Solution _thisSolution) private returns (uint256) {
+        uint256 goal = _thisSolution.fundingGoal();
+        _upd.approve(address(_thisSolution), goal);
+        _thisSolution.contribute(goal);
+        return goal;
     }
 }

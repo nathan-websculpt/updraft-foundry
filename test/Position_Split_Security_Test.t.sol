@@ -185,7 +185,7 @@ contract Position_Split_Security_Test is Position_Base {
         console2.log("Initial position shares: %d", initialPositionShares);
 
         // Get the position's contribution amount
-        (uint256 initialContribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
+        uint256 initialContribution = _contributionAtAddress(owner, 0, _thisSolution);
 
         console2.log("Initial contribution: %d", initialContribution);
 
@@ -217,9 +217,9 @@ contract Position_Split_Security_Test is Position_Base {
         assertEq(finalTokensContributed, initialTokensContributed);
 
         // Get all positions' contribution amounts
-        (uint256 position0Contribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
-        (uint256 position1Contribution,,,,) = _thisSolution.positionsByAddress(owner, 1);
-        (uint256 position2Contribution,,,,) = _thisSolution.positionsByAddress(owner, 2);
+        uint256 position0Contribution = _contributionAtAddress(owner, 0, _thisSolution);
+        uint256 position1Contribution = _contributionAtAddress(owner, 1, _thisSolution);
+        uint256 position2Contribution = _contributionAtAddress(owner, 2, _thisSolution);
 
         console2.log("Position 0 contribution after split: %d", position0Contribution);
         console2.log("Position 1 contribution: %d", position1Contribution);
@@ -304,7 +304,7 @@ contract Position_Split_Security_Test is Position_Base {
         console2.log("Initial position shares: %d", initialPositionShares);
 
         // Get the position's contribution amount
-        (uint256 initialContribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
+        uint256 initialContribution = _contributionAtAddress(owner, 0, _thisSolution);
 
         console2.log("Initial contribution: %d", initialContribution);
 
@@ -342,7 +342,7 @@ contract Position_Split_Security_Test is Position_Base {
         // Sum up all positions' contributions
         uint256 totalPositionContributions = 0;
         for (uint256 i = 0; i < positions; i++) {
-            (uint256 positionContribution,,,,) = _thisSolution.positionsByAddress(owner, i);
+            uint256 positionContribution = _contributionAtAddress(owner, i, _thisSolution);
             console2.log("Position %d contribution: %d", i, positionContribution);
             totalPositionContributions += positionContribution;
         }

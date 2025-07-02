@@ -67,4 +67,10 @@ abstract contract Base is Test, Utils, BaseHelpers {
             _makeSolutionData()
         );
     }
+
+    // TODO: refactor
+    function _skipPastDeadline(Solution _thisSolution) internal {
+        uint256 deadline = _thisSolution.deadline();
+        skip(deadline + 1);
+    }
 }

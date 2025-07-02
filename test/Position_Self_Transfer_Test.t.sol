@@ -106,7 +106,7 @@ contract Position_Self_Transfer_Test is Position_Base {
         assertEq(finalPositionCount, initialPositionCount + 1);
 
         // Verify original position is empty (deleted)
-        (uint256 emptyContribution,,,,) = _thisSolution.positionsByAddress(owner, 0);
+        uint256 emptyContribution = _contributionAtAddress(owner, 0, _thisSolution);
         assertEq(emptyContribution, 0);
 
         // Verify new position has the same properties as the original

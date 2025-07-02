@@ -70,4 +70,20 @@ abstract contract Solution_Base is Test, Utils, BaseHelpers {
             _makeSolutionData()
         );
     }
+
+    function _contribute(Solution _thisSolution, address contributor, uint256 amount) internal {
+        vm.prank(contributor);
+        _thisSolution.contribute(amount);
+    }
+
+    // TODO: refactor, also needed in Base
+    function _skipPastDeadline(Solution _thisSolution) internal {
+        uint256 deadline = _thisSolution.deadline();
+        skip(deadline + 1);
+    }
+
+    function _skipPastCycleLength(Solution _thisSolution) internal {
+        uint256 cycleLength = _thisSolution.cycleLength();
+        skip(cycleLength + 1);
+    }
 }

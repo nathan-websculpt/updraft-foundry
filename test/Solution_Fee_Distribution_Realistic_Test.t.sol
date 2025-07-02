@@ -24,14 +24,12 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
 
         // Second wallet contributes in the first cycle
         uint256 secondContribution = 20_000e18; // 20,000 UPD
-        vm.prank(alice);
-        _thisSolution.contribute(secondContribution);
+        _contribute(_thisSolution, alice, secondContribution);
         console2.log("Second wallet contributed %s UPD in cycle 1", _formatUnits(secondContribution));
 
         // Third wallet contributes in the first cycle
         uint256 thirdContribution = 10_000e18; // 10,000 UPD
-        vm.prank(bob);
-        _thisSolution.contribute(thirdContribution);
+        _contribute(_thisSolution, bob, thirdContribution);
         console2.log("Third wallet contributed %s UPD in cycle 1", _formatUnits(thirdContribution));
 
         // Advance time to the second cycle
@@ -47,8 +45,7 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
 
         // Second wallet contributes in the third cycle
         uint256 secondContributionSecondCycle = 15_000e18;
-        vm.prank(alice);
-        _thisSolution.contribute(secondContributionSecondCycle);
+        _contribute(_thisSolution, alice, secondContributionSecondCycle);
         console2.log("Second wallet contributed %s UPD in cycle 3", _formatUnits(secondContributionSecondCycle));
 
         // Advance time to the fourth cycle
@@ -56,8 +53,7 @@ contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
 
         // Third wallet contributes in the fourth cycle
         uint256 thirdContributionSecondCycle = 25_000e18;
-        vm.prank(bob);
-        _thisSolution.contribute(thirdContributionSecondCycle);
+        _contribute(_thisSolution, bob, thirdContributionSecondCycle);
         console2.log("Third wallet contributed %s UPD in cycle 4", _formatUnits(thirdContributionSecondCycle));
 
         // Advance time to the fifth cycle

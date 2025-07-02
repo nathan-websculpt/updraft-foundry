@@ -91,7 +91,7 @@ contract Idea_Test is Base {
         for (uint256 i = 0; i < 3; i++) {
             skip(cycleLength + 1);
             // make a small contribution to update cycles (this is owner contributing)
-            _thisIdea.contribute(ANTI_SPAM_FEE * 2);
+            _smallContribution(_thisIdea);
         }
 
         // Get position amount after cycles
@@ -122,7 +122,7 @@ contract Idea_Test is Base {
         uint256 cycleLength = _thisIdea.cycleLength();
         skip(cycleLength + 1);
 
-        _thisIdea.contribute(ANTI_SPAM_FEE * 2);
+        _smallContribution(_thisIdea);
 
         uint256 initialTokens = _thisIdea.tokens();
 
@@ -151,7 +151,7 @@ contract Idea_Test is Base {
         uint256 cycleLength = _thisIdea.cycleLength();
         skip(cycleLength + 1);
 
-        _thisIdea.contribute(ANTI_SPAM_FEE * 2);
+        _smallContribution(_thisIdea);
 
         // get initial number of positions
         uint256 initialPositions = _thisIdea.numPositions(owner);
@@ -191,7 +191,7 @@ contract Idea_Test is Base {
         skip(cycleLength + 1);
 
         // Make a small contribution to create a new cycle
-        _thisIdea.contribute(ANTI_SPAM_FEE * 2);
+        _smallContribution(_thisIdea);
 
         // get initial positions
         (uint256 aliceInitialTokens,) = _thisIdea.checkPosition(alice, 0);
@@ -203,7 +203,7 @@ contract Idea_Test is Base {
         skip(cycleLength + 1);
 
         // Call updateCyclesAddingAmount indirectly by making a small contribution
-        _thisIdea.contribute(ANTI_SPAM_FEE * 2);
+        _smallContribution(_thisIdea);
 
         // check positions after airdrop
         (uint256 aliceAfterAirdropTokens,) = _thisIdea.checkPosition(alice, 0);
@@ -241,14 +241,14 @@ contract Idea_Test is Base {
         skip(cycleLength + 1);
 
         // Make a small contribution to create a new cycle
-        _thisIdea.contribute(ANTI_SPAM_FEE * 2);
+        _smallContribution(_thisIdea);
 
         // first wallet airdrops to the idea
         _thisIdea.airdrop(AIRDROP_AMT);
 
         skip(cycleLength + 1);
 
-        _thisIdea.contribute(ANTI_SPAM_FEE * 2);
+        _smallContribution(_thisIdea);
 
         // get total tokens before withdrawals
         uint256 totalTokensBefore = _thisIdea.tokens();
@@ -377,5 +377,9 @@ contract Idea_Test is Base {
         uint256 fee = _max(ANTI_SPAM_FEE, (CONTRIBUTION_AMT * 10_000) / 1_000_000);
         uint256 expectedAmt = CONTRIBUTION_AMT - fee;
         return expectedAmt;
+    }
+
+    function _smallContribution(Idea _thisIdea) private {
+        _thisIdea.contribute(ANTI_SPAM_FEE * 2);
     }
 }

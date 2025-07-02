@@ -69,4 +69,13 @@ abstract contract Position_Base is Test, Utils, BaseHelpers {
             _makeSolutionData()
         );
     }
+
+    function _contributionAtAddress(address who, uint256 index, Solution _thisSolution)
+        internal
+        view
+        returns (uint256)
+    {
+        (uint256 contribution,,,,) = _thisSolution.positionsByAddress(who, index);
+        return contribution;
+    }
 }
