@@ -40,7 +40,7 @@ abstract contract Idea_Fee_Distribution_Base is Test, Utils {
 
         _updraft = new Updraft(_upd, ANTI_SPAM_FEE, PERCENT_FEE, CYCLE_LENGTH, ACCRUAL_RATE, faucet);
 
-        // approve updraft to spend UDP
+        // approve updraft to spend UPD
         _upd.approve(address(_updraft), 1000e18);
 
         // give alice and bob some UPD
