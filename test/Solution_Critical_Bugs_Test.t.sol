@@ -6,13 +6,13 @@ import "./bases/Solution_Base.t.sol";
 contract Solution_Critical_Bugs_Test is Solution_Base {
     // Division by Zero Vulnerabilities
     function testHandlesTotalSharesWhenNoCyclesExist() public {
-        Solution _thisSolution = _setup(); // makes an idea, a solution, and approves UPD spending on solution for owner, alice, and bob
+        Solution _thisSolution = _setupSolution(); // makes an idea, a solution, and approves UPD spending on solution for owner, alice, and bob
         uint256 totalShares = _thisSolution.totalShares();
         assertEq(totalShares, 0);
     }
 
     function testHandlesRefundWhenTotalSharesIsZero() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 secondContribution = 20e18;
         _contribute(_thisSolution, alice, secondContribution);
 
@@ -29,7 +29,7 @@ contract Solution_Critical_Bugs_Test is Solution_Base {
 
     // should handle fee collection when cycle.shares is zero
     function testHandlesFeeCollectionWhenCycleSharesIsZero() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 secondContribution = 20e18;
         _contribute(_thisSolution, alice, secondContribution);
 

@@ -70,9 +70,9 @@ abstract contract Solution_Base is Test, Utils, BaseHelpers {
         skip(cycleLength + 1);
     }
 
-    function _setup() internal returns (Solution) {
-        (Idea _thisIdea, ,) = BaseHelpers.createIdea(_updraft, CONTRIBUTION_FEE, CONTRIBUTION, _makeIdeaData());
-        (Solution _thisSolution, ,) = BaseHelpers.createSolution(
+    function _setupSolution() internal returns (Solution) {
+        (Idea _thisIdea,,) = BaseHelpers.createIdea(_updraft, CONTRIBUTION_FEE, CONTRIBUTION, _makeIdeaData());
+        (Solution _thisSolution,,) = BaseHelpers.createSolution(
             _updraft,
             _upd,
             address(_thisIdea),

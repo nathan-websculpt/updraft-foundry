@@ -6,7 +6,7 @@ import "./bases/Position_Base.t.sol";
 contract Position_Split_Security_Test is Position_Base {
     // forge test --mt testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions -vv
     function testIdeaDoesNotAllowGainingExtraTokensBySplittingPositions() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         _upd.approve(address(_thisIdea), TRANSFER_AMT);
 
@@ -86,7 +86,7 @@ contract Position_Split_Security_Test is Position_Base {
 
     // forge test --mt testIdeaDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes -vv
     function testIdeaDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         // Get initial position details
         (uint256 initialPositionTokens, uint256 initialPositionShares) = _thisIdea.checkPosition(owner, 0);
@@ -150,7 +150,7 @@ contract Position_Split_Security_Test is Position_Base {
 
     // forge test --mt testSolutionDoesNotAllowGainingExtraTokensBySplittingPositions -vv
     function testSolutionDoesNotAllowGainingExtraTokensBySplittingPositions() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         // Create a position by contributing
         _thisSolution.contribute(CONTRIBUTION_AMT);
@@ -265,7 +265,7 @@ contract Position_Split_Security_Test is Position_Base {
 
     // forge test --mt testSolutionDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes -vv
     function testSolutionDoesNotAllowGainingExtraTokensBySplittingPositionsMultipleTimes() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         // Create position by contributing
         uint256 contributionAmt = 20e18;

@@ -51,6 +51,20 @@ abstract contract Base is Test, Utils, BaseHelpers {
         _upd.transfer(bob, TRANSFER_AMT);
     }
 
+    function _setupSolution() internal returns (Solution) {
+        (Idea _thisIdea,,) = _createIdea();
+        (Solution _thisSolution,,) = _createSolution(address(_thisIdea));
+
+        _upd.approve(address(_thisSolution), TRANSFER_AMT);
+
+        vm.prank(alice);
+        _upd.approve(address(_thisSolution), TRANSFER_AMT);
+        vm.prank(bob);
+        _upd.approve(address(_thisSolution), TRANSFER_AMT);
+
+        return _thisSolution;
+    }
+
     function _createIdea() internal returns (Idea, Vm.Log[] memory, bytes memory) {
         return BaseHelpers.createIdea(_updraft, CONTRIBUTION_FEE, CONTRIBUTION, _makeIdeaData());
     }

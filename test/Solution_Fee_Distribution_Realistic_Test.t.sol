@@ -6,7 +6,7 @@ import "./bases/Solution_Base.t.sol";
 contract Solution_Fee_Distribution_Realistic_Test is Solution_Base {
     // should distribute fees correctly with multiple contributors over multiple cycles
     function testDistributesFeesCorrectlyWithMultipleContributorsOverMultipleCycles() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 transferAmt = 1_000_000e18;
         _upd.transfer(alice, transferAmt);
         _upd.transfer(bob, transferAmt);

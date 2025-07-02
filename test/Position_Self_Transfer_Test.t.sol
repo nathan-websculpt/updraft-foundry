@@ -7,7 +7,7 @@ contract Position_Self_Transfer_Test is Position_Base {
     // Idea contract should delete the original position and create a new one when transferring to yourself without gaining extra tokens
     // forge test --mt testIdeaDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens -vv
     function testIdeaDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         // Get initial position details
         uint256 initialPositionCount = _thisIdea.numPositions(owner);
@@ -45,7 +45,7 @@ contract Position_Self_Transfer_Test is Position_Base {
 
     // forge test --mt testSolutionDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens -vv
     function testSolutionDeletesOriginalPositionWhenTransferringSelfWithoutGainingExtraTokens() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         // Create a position by contributing
         _thisSolution.contribute(CONTRIBUTION_AMT);

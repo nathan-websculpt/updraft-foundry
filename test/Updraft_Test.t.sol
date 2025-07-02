@@ -35,13 +35,13 @@ contract Updraft_Test is Base {
     }
 
     function testCallerPositionEqualContributionMinusAntiSpam() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         (uint256 tokens,) = _thisIdea.checkPosition(owner);
         assertEq(tokens, CONTRIBUTION - ANTI_SPAM_FEE);
     }
 
     function testDeploySolution() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         (Solution _thisSolution, Vm.Log[] memory logs, bytes memory solutionBytesData) =
             _createSolution(address(_thisIdea));
 
@@ -64,7 +64,7 @@ contract Updraft_Test is Base {
 
     // Creating a Solution to the Idea with a positive stake
     function testResultsInPositiveStakeForCaller() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         (Solution _thisSolution, Vm.Log[] memory logs, bytes memory solutionBytesData) =
             _createSolution(address(_thisIdea));
 

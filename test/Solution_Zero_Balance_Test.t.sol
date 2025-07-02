@@ -9,7 +9,7 @@ contract Solution_Zero_Balance_Test is Solution_Base {
     IERC20 token;
 
     function testAllowsContributorFeesToBeFullyCollected() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         _upd.approve(address(_thisSolution), 1000e18);
 
         console2.log("\n--- Creating test scenario ---");

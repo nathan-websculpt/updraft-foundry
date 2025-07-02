@@ -62,9 +62,9 @@ abstract contract Position_Base is Test, Utils, BaseHelpers {
         return contribution;
     }
 
-    function _setup() internal returns (Solution) {
-        (Idea _thisIdea, ,) = _createIdea();
-        (Solution _thisSolution, ,) = BaseHelpers.createSolution(
+    function _setupSolution() internal returns (Solution) {
+        (Idea _thisIdea,,) = _createIdea();
+        (Solution _thisSolution,,) = BaseHelpers.createSolution(
             _updraft,
             _upd,
             address(_thisIdea),

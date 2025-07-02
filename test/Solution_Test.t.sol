@@ -5,7 +5,7 @@ import "./bases/Base.t.sol";
 
 contract Solution_Test is Base {
     function testAllowsUsersToContributeAndCreatePosition() public {
-        Solution _thisSolution = _setup(); // makes an idea, a solution, and approves UPD spending on solution for owner, alice, and bob
+        Solution _thisSolution = _setupSolution(); // makes an idea, a solution, and approves UPD spending on solution for owner, alice, and bob
 
         // alice contributes
         vm.prank(alice);
@@ -16,7 +16,7 @@ contract Solution_Test is Base {
     }
 
     function testCorrectlyHandlesContributorFees() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         uint256 contributorFee = _thisSolution.contributorFee();
         uint256 percentScale = _thisSolution.percentScale();
@@ -72,7 +72,7 @@ contract Solution_Test is Base {
     }
 
     function testAllowsContributorsToCollectFeesAfterMultipleCycles() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         vm.prank(alice);
         _thisSolution.contribute(CONTRIBUTION_AMT);
@@ -122,7 +122,7 @@ contract Solution_Test is Base {
     }
 
     function testDistributeFeesProportionallyToContributors() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         // alice contributes twice as much as bob
         vm.prank(alice);
@@ -169,7 +169,7 @@ contract Solution_Test is Base {
     }
 
     function testAllowsOwnerToExtendTheGoal() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 initialGoal = _thisSolution.fundingGoal();
         _upd.approve(address(_thisSolution), initialGoal);
         _thisSolution.contribute(initialGoal);
@@ -188,7 +188,7 @@ contract Solution_Test is Base {
     }
 
     function testAllowsOwnerToExtendTheGoalAndDeadline() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 initialGoal = _thisSolution.fundingGoal();
         uint256 initialDeadline = _thisSolution.deadline();
 
@@ -213,7 +213,7 @@ contract Solution_Test is Base {
     }
 
     function testDoesNotAllowExtendingGoalToALowerValue() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 initialGoal = _thisSolution.fundingGoal();
         uint256 newGoal = initialGoal - 2;
         vm.expectRevert();
@@ -221,7 +221,7 @@ contract Solution_Test is Base {
     }
 
     function testDoesNotAllowExtendingGoalIfNotOwner() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 initialGoal = _thisSolution.fundingGoal();
         uint256 newGoal = initialGoal + 2;
         vm.prank(bob);
@@ -231,7 +231,7 @@ contract Solution_Test is Base {
 
     // STAKE MGMT
     function testAllowsAddingStake() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         uint256 initialStake = _thisSolution.stakes(owner);
         uint256 initialTotalStake = _thisSolution.stake();
@@ -247,7 +247,7 @@ contract Solution_Test is Base {
     }
 
     function testAllowsTransferringStake() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         uint256 initialStake = _thisSolution.stakes(owner);
 
@@ -262,7 +262,7 @@ contract Solution_Test is Base {
     }
 
     function testAllowsRemovingStakeAfterGoalIsReached() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         // Contribute enough to reach the goal
         _contributeFundingGoal(_thisSolution);
@@ -290,7 +290,7 @@ contract Solution_Test is Base {
     }
 
     function testDoesNotAllowRemovingStakeBeforeGoalIsReached() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 stakeToRemove = 10e18;
         vm.expectRevert();
         _thisSolution.removeStake(stakeToRemove);
@@ -298,7 +298,7 @@ contract Solution_Test is Base {
 
     // REFUND
     function testShouldAllowRefundsIfGoalFails() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         vm.prank(alice);
         _thisSolution.contribute(CONTRIBUTION_AMT);
@@ -327,7 +327,7 @@ contract Solution_Test is Base {
     }
 
     function testDoesNotAllowRefundsIfGoalIsReached() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         vm.prank(alice);
         _thisSolution.contribute(CONTRIBUTION_AMT);
@@ -347,7 +347,7 @@ contract Solution_Test is Base {
     }
 
     function testDoesNotAllowRefundsBeforeDeadline() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         vm.prank(alice);
         _thisSolution.contribute(CONTRIBUTION_AMT);
@@ -358,7 +358,7 @@ contract Solution_Test is Base {
     }
 
     function testDoesNotAllowRefundsForPositionsCreatedBeforeGoalExtension() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         uint256 transferAmt = 100_000e18;
         uint256 contribution = 5_000e18;
@@ -408,7 +408,7 @@ contract Solution_Test is Base {
     }
 
     function testShouldAllowRefundsForPositionsCreatedAfterGoalExtension() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         uint256 initialGoal = _thisSolution.fundingGoal();
 
@@ -454,7 +454,7 @@ contract Solution_Test is Base {
     }
 
     function testShouldAllowOwnerToWithdrawFundsAfterGoalIsReached() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
 
         // contribute enough to reach the goal
         _upd.approve(address(_thisSolution), _thisSolution.fundingGoal());
@@ -474,7 +474,7 @@ contract Solution_Test is Base {
     }
 
     function testShouldNotAllowWithdrawingMoreThanAvailable() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 contribution = _contributeFundingGoal(_thisSolution);
 
         vm.expectRevert();
@@ -482,7 +482,7 @@ contract Solution_Test is Base {
     }
 
     function testShouldNotAllowNonOwnersToWithdrawFunds() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         uint256 contribution = _contributeFundingGoal(_thisSolution);
 
         vm.prank(alice);
@@ -493,7 +493,7 @@ contract Solution_Test is Base {
     // POSITION MGMT
 
     function testShouldAllowTransferringPosition() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         _thisSolution.contribute(CONTRIBUTION_AMT);
 
         (uint256 positionTokens,) = _thisSolution.checkPosition(owner, 0);
@@ -506,7 +506,7 @@ contract Solution_Test is Base {
     }
 
     function testShouldAllowSplittingPositions() public {
-        Solution _thisSolution = _setup();
+        Solution _thisSolution = _setupSolution();
         _thisSolution.contribute(CONTRIBUTION_AMT);
 
         (uint256 positionTokens,) = _thisSolution.checkPosition(owner, 0);
@@ -524,19 +524,6 @@ contract Solution_Test is Base {
     }
 
     // PRIVATE HELPERS
-    function _setup() private returns (Solution) {
-        (Idea _thisIdea, ,) = _createIdea();
-        (Solution _thisSolution, ,) = _createSolution(address(_thisIdea));
-
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        vm.prank(alice);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-        vm.prank(bob);
-        _upd.approve(address(_thisSolution), TRANSFER_AMT);
-
-        return _thisSolution;
-    }
 
     function _contributeFundingGoal(Solution _thisSolution) private returns (uint256) {
         uint256 goal = _thisSolution.fundingGoal();

@@ -7,14 +7,14 @@ contract Idea_Test is Base {
     uint256 AIRDROP_AMT = 1_000_000e18; // 1 million UPD - truly massive airdrop to test scaling
 
     function testUserCanContributeToIdea() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         (uint256 tokens, uint256 expectedAmt) = _basicContribution(_thisIdea);
         assertEq(tokens, expectedAmt);
     }
 
     // should correctly handle contributor fees in cycles after the first
     function testHandlesContributorFeesInCyclesAfterTheFirst() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         uint256 contributorFee = _thisIdea.contributorFee();
         uint256 percentScale = _thisIdea.percentScale();
@@ -38,7 +38,7 @@ contract Idea_Test is Base {
     }
 
     function testDoesNotCollectContributorFeesInFirstCycle() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         (uint256 tokens, uint256 expectedAmt) = _basicContribution(_thisIdea);
         assertEq(tokens, expectedAmt);
 
@@ -47,13 +47,13 @@ contract Idea_Test is Base {
     }
 
     function testShouldNotAllowAirdropsInFirstCycle() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         vm.expectRevert(Idea.CannotAirdropInFirstCycle.selector);
         _thisIdea.airdrop(AIRDROP_AMT);
     }
 
     function testAllowsContributorsToWithdrawTheirPositions() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         uint256 initialBalance = _upd.balanceOf(owner);
         (uint256 tokens,) = _thisIdea.checkPosition(owner, 0);
 
@@ -71,7 +71,7 @@ contract Idea_Test is Base {
 
     // should correctly distribute contributor fees when withdrawing after multiple cycles
     function testCorrectlyDistributesContributorFeesWhenWithdrawingAfterMultipleCycles() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         _upd.approve(address(_thisIdea), TRANSFER_AMT);
         vm.prank(alice);
@@ -116,7 +116,7 @@ contract Idea_Test is Base {
 
     // AIRDROP
     function testIncreasesTotalTokensInContract() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 2 ether);
 
         uint256 cycleLength = _thisIdea.cycleLength();
@@ -145,7 +145,7 @@ contract Idea_Test is Base {
     }
 
     function testCreatePositionWithZeroTokensForTheAirDropper() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 2 ether);
 
         uint256 cycleLength = _thisIdea.cycleLength();
@@ -173,7 +173,7 @@ contract Idea_Test is Base {
     }
 
     function testDistributesAirdroppedTokensProportionallyToContributors() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 4 ether);
         vm.prank(alice);
@@ -223,7 +223,7 @@ contract Idea_Test is Base {
     }
 
     function testLeavesNoTokensInContractAfterAllContributorsWithdraw() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         _upd.approve(address(_thisIdea), AIRDROP_AMT + 4 ether);
         vm.prank(alice);
@@ -321,7 +321,7 @@ contract Idea_Test is Base {
     }
 
     function testTransferringPositions() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
 
         (uint256 initialTokens,) = _thisIdea.checkPosition(owner, 0);
 
@@ -341,7 +341,7 @@ contract Idea_Test is Base {
     }
 
     function testAllowsSplittingPositions() public {
-        (Idea _thisIdea, ,) = _createIdea();
+        (Idea _thisIdea,,) = _createIdea();
         (uint256 initialTokens,) = _thisIdea.checkPosition(owner, 0);
 
         // split position into two
